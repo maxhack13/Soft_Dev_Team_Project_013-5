@@ -1,16 +1,37 @@
-<div class="container mt-4" style="max-width: 600px;">
-    <h1>Register</h1>
-    {{> message}}
-    <form action="/register" method="post">
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required>
+<div class="container mt-4" style="max-width: 1200px;">
+    <div class="row">
+        <div class="col-6">
+            <h1>
+            Get started with <br>
+                <span style="color:#00bf63; font-weight:bold">My</span>
+                <span style="color: #0097b2; font-weight:bold">Mini</span>
+                <span style="color: #cb6ce6; font-weight:bold">Dashboard</span>
+            </h1>
+            <div id="registrationText">
+                <ul>
+                    <li>Connections</li>
+                    <li>Ideas</li>
+                    <li>Fun</li>
+                </ul>
+                <h4>All under one app.</h4>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
+        <div class="col-6" id="accountRegistration">
+        
+        <h2>Create Account</h2>
+        {{> message}}
+        <form action="/register" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        <p class="mt-3">Already have an account? <a href="/login">Login</a></p>
         </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-    <p class="mt-3">Already have an account? <a href="/login">Login</a></p>
+    </div>
 </div>

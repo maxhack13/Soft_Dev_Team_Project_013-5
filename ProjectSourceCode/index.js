@@ -137,25 +137,7 @@ const auth = (req, res, next) => {
 // Authentication Required
 
 app.get('/discover', auth, (req, res) => {
-    axios({
-        url: 'https://app.ticketmaster.com/discovery/v2/events.json',
-        method: 'GET',
-        dataType: 'json',
-        headers: {
-            'Accept-Encoding': 'application/json',
-        },
-        params: {
-            apikey: process.env.API_KEY,
-            keyword: 'music',
-            size: 10,
-        },
-    })
-        .then(results => {
-            res.render('pages/discover', { results: results.data._embedded.events });
-        })
-        .catch(error => {
-            res.render('pages/discover', { results: [], message: error.message, error: true });
-        });
+    res.render('pages/discover');
 });
 
 

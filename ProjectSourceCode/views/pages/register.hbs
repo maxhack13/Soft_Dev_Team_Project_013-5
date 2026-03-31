@@ -1,24 +1,24 @@
 <div class="container mt-4" style="max-width: 1200px;">
     <div class="row">
-        <div class="col-6">
+        <div class="col-6 mt-5">
             <h1>
             Get started with <br>
-                <span style="color:#00bf63; font-weight:bold">My</span>
-                <span style="color: #0097b2; font-weight:bold">Mini</span>
-                <span style="color: #cb6ce6; font-weight:bold">Dashboard</span>
+                <div class="logo">
+                    <span class="my">My</span><span class="mini">Mini</span><span class="dash">Dashboard</span>
+                </div>
             </h1>
             <div id="registrationText">
                 <ul>
-                    <li>Connections</li>
-                    <li>Ideas</li>
-                    <li>Fun</li>
+                    <li>Make connections.</li>
+                    <li>Share ideas.</li>
+                    <li>Have a good time.</li>
                 </ul>
-                <h4>All under one app.</h4>
+                <h4>All with one app.</h4>
             </div>
         </div>
         <div class="col-6" id="accountRegistration">
         
-        <h2>Create Account</h2>
+        <h1>Create Account</h1>
         {{> message}}
         <form action="/register" method="post">
             <div class="mb-3">
@@ -31,7 +31,7 @@
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
-        <p class="mt-3">Already have an account? <a href="/login">Login</a></p>
+        <p class="mt-3 link">Already have an account? <a href="/login">Login</a></p>
         </div>
     </div>
 </div>

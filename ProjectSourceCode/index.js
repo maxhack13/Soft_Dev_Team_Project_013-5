@@ -71,6 +71,8 @@ app.use(
     })
 );
 
+app.use(express.static(path.join(__dirname, 'resources'))); // Access resources folder at the root url, e.g. to access resources/css/default.css, use /css/home.css
+
 // *****************************************************
 // <!-- Section 4 : API Routes -->
 // *****************************************************

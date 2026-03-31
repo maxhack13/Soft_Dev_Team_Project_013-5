@@ -54,6 +54,7 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json()); // specify the usage of JSON for parsing request body.
+app.use(express.static(path.join(__dirname, 'public'))); // serve static files (images, CSS, etc.) from the public folder
 
 // initialize session variables
 app.use(
@@ -138,6 +139,18 @@ const auth = (req, res, next) => {
 
 app.get('/discover', auth, (req, res) => {
     res.render('pages/discover');
+});
+
+app.get('/SnowReport', auth, (req, res) => {
+    res.render('pages/SnowReport');
+});
+
+app.get('/Trading', auth, (req, res) => {
+    res.render('pages/Trading');
+});
+
+app.get('/Recipe', auth, (req, res) => {
+    res.render('pages/Recipe');
 });
 
 

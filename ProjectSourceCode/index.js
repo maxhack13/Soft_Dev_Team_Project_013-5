@@ -155,6 +155,14 @@ app.get('/Recipe', auth, (req, res) => {
     res.render('pages/Recipe');
 });
 
+app.get('/search', auth, (req, res) => {
+    res.render('pages/search');
+});
+
+app.get('/friends', auth, (req, res) => {
+    res.render('pages/friends');
+});
+
 
 app.get('/logout', auth, (req, res) => {
     req.session.destroy((err) => {

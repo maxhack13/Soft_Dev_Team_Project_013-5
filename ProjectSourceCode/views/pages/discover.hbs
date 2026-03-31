@@ -1,29 +1,61 @@
 {{> message}}
 
-<div class="container my-4">
-    <h1 class="mb-4">Discover Events</h1>
-    <div class="row">
-        {{#each results}}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {{#if images}}
-                <img src="{{images.[0].url}}" class="card-img-top" alt="{{name}}">
-                {{else}}
-                <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top"
-                    alt="No image available">
-                {{/if}}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{name}}</h5>
-                    {{#if dates.start}}
-                    <p class="card-text">
-                        <strong>Date:</strong> {{dates.start.localDate}}<br>
-                        <strong>Time:</strong> {{dates.start.localTime}}
-                    </p>
-                    {{/if}}
-                    <a href="{{url}}" target="_blank" class="btn btn-primary mt-auto">Book Now</a>
+<div class="container my-5">
+    <h1 class="mb-5 text-center">Mini Apps</h1>
+    <div class="row g-4">
+        <!-- App 1 -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm custom-card-hover">
+                <!-- Placeholder Image -->
+                <img src="/Images/SnowReport.png" class="card-img-top" alt="App 1 Image"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column text-center">
+                    <h5 class="card-title fw-bold">Snow Report</h5>
+                    <p class="card-text text-muted">Check the latest snow report for your favorite ski resort.</p>
+                    <a href="/SnowReport" class="btn btn-primary mt-auto stretched-link text-white">Open Snow Report</a>
                 </div>
             </div>
         </div>
-        {{/each}}
+
+        <!-- App 2 -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm custom-card-hover">
+                <!-- Placeholder Image -->
+                <img src="/Images/TradingImage.jpg" class="card-img-top" alt="App 2 Image"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column text-center">
+                    <h5 class="card-title fw-bold">Trading Tracker</h5>
+                    <p class="card-text text-muted">Track your stock market trades and investments.</p>
+                    <a href="/Trading" class="btn btn-primary mt-auto stretched-link text-white">Open Trading Tracker</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- App 3 -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm custom-card-hover">
+                <!-- Placeholder Image -->
+                <img src="/Images/Recipe.png" class="card-img-top" alt="App 3 Image"
+                    style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column text-center">
+                    <h5 class="card-title fw-bold">Recipie of the Day</h5>
+                    <p class="card-text text-muted">Check out today's featured recipe and cook something new!</p>
+                    <a href="/Recipe" class="btn btn-primary mt-auto stretched-link text-white">Open Recipie of the
+                        Day</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Optional: Adds a slight lift effect when hovering over the cards */
+    .custom-card-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .custom-card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>

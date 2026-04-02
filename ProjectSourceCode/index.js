@@ -155,14 +155,70 @@ app.get('/Recipe', auth, (req, res) => {
     res.render('pages/Recipe');
 });
 
-app.get('/search', auth, (req, res) => {
-    res.render('pages/search');
+// ---- Friends Routes ----
+
+app.get('/friends', auth, async (req, res) => {
+    try {
+        const friends = await db.any(
+            `SELECT friend_id, created_at FROM friends WHERE user_id = $1 ORDER BY created_at DESC`,
+            [req.session.user.username]
+        );
+        res.render('pages/Friends', { friends });
+    } catch (err) {
+        console.log(err);
+        res.render('pages/Friends', { friends: [], message: 'Error loading friends.', error: true });
+    }
 });
 
-app.get('/friends', auth, (req, res) => {
-    res.render('pages/friends');
+app.post('/friends/add', auth, async (req, res) => {
+    const currentUser = req.session.user.username;
+    const friendUsername = req.body.friend_username;
+
+    // Can't friend yourself
+    if (currentUser === friendUsername) {
+        const friends = await db.any(`SELECT friend_id, created_at FROM friends WHERE user_id = $1 ORDER BY created_at DESC`, [currentUser]);
+        return res.render('pages/Friends', { friends, message: "You can't add yourself as a friend.", error: true });
+    }
+
+    try {
+        // Check if the friend exists
+        const friendUser = await db.oneOrNone(`SELECT username FROM users WHERE username = $1`, [friendUsername]);
+        if (!friendUser) {
+            const friends = await db.any(`SELECT friend_id, created_at FROM friends WHERE user_id = $1 ORDER BY created_at DESC`, [currentUser]);
+            return res.render('pages/Friends', { friends, message: `User "${friendUsername}" does not exist.`, error: true });
+        }
+
+        // Insert both directions (mutual friendship)
+        await db.tx(async t => {
+            await t.none(`INSERT INTO friends (user_id, friend_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [currentUser, friendUsername]);
+            await t.none(`INSERT INTO friends (user_id, friend_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [friendUsername, currentUser]);
+        });
+
+        res.redirect('/friends');
+    } catch (err) {
+        console.log(err);
+        const friends = await db.any(`SELECT friend_id, created_at FROM friends WHERE user_id = $1 ORDER BY created_at DESC`, [currentUser]);
+        res.render('pages/Friends', { friends, message: 'Error adding friend.', error: true });
+    }
 });
 
+app.post('/friends/remove', auth, async (req, res) => {
+    const currentUser = req.session.user.username;
+    const friendUsername = req.body.friend_username;
+
+    try {
+        // Delete both directions (mutual)
+        await db.none(
+            `DELETE FROM friends WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`,
+            [currentUser, friendUsername]
+        );
+        res.redirect('/friends');
+    } catch (err) {
+        console.log(err);
+        const friends = await db.any(`SELECT friend_id, created_at FROM friends WHERE user_id = $1 ORDER BY created_at DESC`, [currentUser]);
+        res.render('pages/Friends', { friends, message: 'Error removing friend.', error: true });
+    }
+});
 
 app.get('/logout', auth, (req, res) => {
     req.session.destroy((err) => {

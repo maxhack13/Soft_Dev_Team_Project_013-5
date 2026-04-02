@@ -88,6 +88,11 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
+    // Validate input first
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).render('pages/register', { message: 'Missing input', error: true });
+    }
+
     //hash the password using bcrypt library
     const hash = await bcrypt.hash(req.body.password, 10);
 
@@ -98,12 +103,7 @@ app.post('/register', async (req, res) => {
             res.redirect('/login');
         })
         .catch((err) => {
-            if (!req.body.username || !req.body.password) {
-                res.status(400).render('pages/register', { message: 'Missing input', error: true });
-            }
-            else {
-                res.render('pages/register', { message: 'Username already exists.', error: true });
-            }
+            res.render('pages/register', { message: 'Username already exists.', error: true });
         });
 });
 

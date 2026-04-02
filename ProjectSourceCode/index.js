@@ -98,7 +98,12 @@ app.post('/register', async (req, res) => {
             res.redirect('/login');
         })
         .catch((err) => {
-            res.status(400).render('pages/register', { message: 'Username already exists.', error: true });
+            if (!req.body.username || !req.body.password) {
+                res.status(400).render('pages/register', { message: 'Missing input', error: true });
+            }
+            else {
+                res.render('pages/register', { message: 'Username already exists.', error: true });
+            }
         });
 });
 

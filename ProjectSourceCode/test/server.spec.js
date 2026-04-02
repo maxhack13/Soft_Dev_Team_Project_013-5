@@ -57,7 +57,7 @@ describe('Testing Add User API', () => {
 // ********************************************************************************
 
 // ********************************************************************************
-//We are checking POST /add_user API by passing the user info in in incorrect manner. This test case should pass and return a status 400 along with a "Usernmane already exists." message.
+//We are checking POST /add_user API by passing the user info in in incorrect manner. This test case should pass and return a status 400 along with a "Missing input." message.
 
 describe('Testing Register API', () => {
   // Example Negative Testcase :
@@ -71,10 +71,10 @@ describe('Testing Register API', () => {
     chai
       .request(server)
       .post('/register')
-      .send({username: 'whoman', password: 'whoseman'})
+      .send({username: '', password: 'whoseman'})
       .end((err, res) => {
         expect(res).to.have.status(400);
-        expect(res.text).to.include('Username already exists.');
+        expect(res.text).to.include('Missing input');
         done();
       });
   });

@@ -80,3 +80,30 @@ describe('Testing Register API', () => {
   });
 });
 
+describe('Testing Login User API', () => {
+  it('positive : /login', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({username: 'John Doe', password: 'password'})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done();
+      });
+  });
+});
+
+describe('Testing Login API', () => {
+  it('Negative : /login', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({username: 'John Doe', password: 'wrongPassword'})
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.text).to.include('Incorrect username or password.'); 
+        done();
+      });
+  });
+});
+

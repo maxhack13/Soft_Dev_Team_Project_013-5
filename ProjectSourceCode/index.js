@@ -127,7 +127,7 @@ app.post('/login', async (req, res) => {
         req.session.save();
         res.redirect('/discover');
     } else {
-        res.render('pages/login', { message: 'Incorrect username or password.', error: true });
+        res.status(400).render('pages/login', { message: 'Incorrect username or password.', error: true });
     }
 });
 

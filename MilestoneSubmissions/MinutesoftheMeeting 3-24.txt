@@ -1,4 +1,4 @@
-3/24
+3/24 Meeting Notes
 James Clayton is not in the group anymore.
 Start coding this week, using Lab assignments as starting point.
 Follow proper Git procedures as described in the Project Guide.

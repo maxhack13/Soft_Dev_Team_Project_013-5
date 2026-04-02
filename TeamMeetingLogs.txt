@@ -1,4 +1,22 @@
-3/24
+3/24 Meeting Notes
 James Clayton is not in the group anymore.
 Start coding this week, using Lab assignments as starting point.
 Follow proper Git procedures as described in the Project Guide.
+
+3/31 Meeting Notes
+What was accomplished since last meeting:
+- Ethan updated the navbar to correctly display the Dashboard, Search, and Friends page linking them to skeleton pages for now until they are implemented
+- Max made the discover page that hosts three cards to link to the mini apps. Linked these cards to sample pages for the mini apps
+- JP worked on the login page UI and restyled it
+- Aidan worked on the registration page designed our overall style for our application and logo
+
+MVP (minimum viable project) for next meeting: We are aiming to finish the dashboard functionality and ensure consistent styling across all pages. We also want to have at least one ideally two mini apps prototyped before next meeting. 
+
+Plans for the upcoming week:
+Max will work on the database to allow for adding users as friends and start creating a skeleton for the snow day mini app
+Ethan will further work on implementing the functionality of the navbar pages of the Search and Friends pages
+JP will work on making consistent styling across the various website pages
+Aiden will make a functional prototype of the recipe mini app
+
+Release notes:
+In Milestone Submission folder we pushed our release notes to summarize what features we have implemented since last meeting.

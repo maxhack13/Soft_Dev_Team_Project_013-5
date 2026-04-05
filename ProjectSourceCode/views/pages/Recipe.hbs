@@ -1,1 +1,62 @@
-<h1>Recipe of the Day</h1>
+<!--
+<script>
+    const date = Date();
+    if(date != getPrevDate()){
+        recipeOfTheDay = getRandomRecipe();
+    }
+</script>
+-->
+<style>
+    body{
+        padding-top: 130px;
+    }
+</style>
+
+{{> message}}
+<h1 class="mb-4">Recipes</h1>
+<div class="container-fluid py-5 px-5" id="recipesBody">
+<div class="col-md-6">
+    <h2>Recipe of the Day</h2>
+  {{#if randomRecipe}}
+  <div class="card shadow-sm mb-5" id="recipeOfTheDay" style="max-height: 500px; max-width: 600px">
+    <div class="card-body">
+
+      <!-- Row 1: Image and Title -->
+      <div class="row mb-4 align-items-center">
+        <div class="col-md-3">
+          <img src="{{randomRecipe.meals.[0].strMealThumb}}" 
+               class="img-fluid rounded" 
+               style="object-fit: cover; max-height: 150px; width: 100%;" 
+               alt="{{randomRecipe.meals.[0].strMeal}}">
+        </div>
+        <div class="col-md-9">
+          <h3>{{randomRecipe.meals.[0].strMeal}}</h3>
+          <span class="badge bg-secondary">{{randomRecipe.meals.[0].strArea}}</span>
+        </div>
+      </div>
+
+      <!-- Row 2: Ingredients and Instructions -->
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Ingredients</h5>
+          <div class="overflow-auto" style="max-height: 200px;">
+            {{> ingredients}}
+          </div>
+        </div>
+        <div class="col-md-8">
+          <h5>Instructions</h5>
+          <div class="overflow-auto" style="max-height: 200px;">
+            {{randomRecipe.meals.[0].strInstructions}}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  {{else}}
+  <div class="alert alert-warning" role="alert">
+    No recipe found.
+  </div>
+  {{/if}}
+</div>
+</div>

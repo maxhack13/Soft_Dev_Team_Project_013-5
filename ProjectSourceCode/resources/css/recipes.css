@@ -1,0 +1,15 @@
+/* #recipesBody {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#recipesBody > .container {
+    width: 100%;
+}
+
+#recipeOfTheDay {
+    max-width: none;
+    max-height: 800px;
+}
+*/

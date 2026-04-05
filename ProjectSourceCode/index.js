@@ -157,7 +157,7 @@ app.get('/Trading', auth, (req, res) => {
 });
 
 app.get('/Recipe', auth, (req, res) => {
-    res.render('pages/Recipe');
+    res.redirect('/Recipe/recipeOfTheDay');
 });
 
 // ---- Friends Routes ----
@@ -234,7 +234,65 @@ app.get('/logout', auth, (req, res) => {
     });
 });
 
+// ---- Recipe Routes ---- //
 
+app.get('/Recipe/recipeOfTheDay', auth, async (req, res) => {
+ try{
+ const date = new Date().toISOString().split('T')[0];
+ const current_date_query = await db.any('SELECT recipe_date FROM recipeOfTheDay WHERE id = 1');
+const current_date = current_date_query[0].recipe_date;
+ if(date != current_date){
+  await db.query(
+    'UPDATE recipeOfTheDay SET recipe_date = $1 WHERE id = 1', [date]
+  );
+  axios({
+  url: `https://www.themealdb.com/api/json/v1/1/random.php`,
+  method: 'GET',
+  dataType: 'json',
+  headers: {
+    'Accept-Encoding': 'application/json',
+  },
+  })
+  .then(async results => {
+    console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+    // res.render('pages/discover', { message: results.data });
+    /* myResults = results.data;
+    wasSuccessful = true; */
+    const randomRecipe = results.data;
+    await db.query(
+        'UPDATE recipeOfTheDay SET recipe_of_the_day = $1 WHERE id = 1', [randomRecipe]
+    );
+    res.render('pages/Recipe', { randomRecipe: randomRecipe });
+  })
+  .catch(error => {
+    // Handle errors
+    /* res.render('pages/discover', {
+      message: {
+        results: [],
+        errorMessage: error.data
+      }
+      } 
+    ) */
+    /* myResults = error.data;
+    wasSuccessful = false; */
+    res.render('pages/Recipe', { message: "Error"});
+});
+/* if (wasSuccessful) {
+  res.render('pages/discover', { message: myResults });
+} else {
+  res.render('pages/discover', { message: myResults, results: [] });
+} */
+  }
+ else {
+    const result = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
+    const randomRecipe = result[0].recipe_of_the_day;
+    res.render('pages/Recipe', { randomRecipe: randomRecipe });
+}
+}
+catch(err){
+    res.render('pages/Recipe', { message: "Error"});
+}
+})
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

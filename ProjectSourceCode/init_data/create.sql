@@ -12,5 +12,12 @@ CREATE TABLE IF NOT EXISTS friends(
     CHECK(user_id <> friend_id)
 );
 
-    
+CREATE TABLE IF NOT EXISTS recipeOfTheDay (
+    id INT PRIMARY KEY DEFAULT 1,
+    recipe_date VARCHAR(30),
+    recipe_of_the_day JSON,
+    CONSTRAINT one_row CHECK (id = 1)
+);
 
+INSERT INTO recipeOfTheDay (id, recipe_date, recipe_of_the_day) 
+VALUES (1, 'lol', '{"lol": "lmao"}');

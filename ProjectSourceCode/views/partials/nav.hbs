@@ -1,34 +1,40 @@
 <header>
- <nav class="navbar navbar-expand-sm border-bottom fixed-top bg-white">
-   <div class="container">
-     <button
-       class="navbar-toggler ms-auto"
-       type="button"
-       data-bs-toggle="collapse"
-       data-bs-target="#navbar-collapse"
-       aria-controls="navbar"
-       aria-expanded="false"
-       aria-label="Toggle navigation">
-       <span class="navbar-toggler-icon"></span>
-     </button>
-     <div class="collapse navbar-collapse" id="navbar-collapse">
-       <ul class="navbar-nav me-auto">
-         <li class="nav-item">
-           <!-- TODO: For Discover, add a <a> tag with an attribute href to call the '/discover' API -->
-           <a class="nav-link" href="/discover">MyMiniDashboard</a>
-         </li>
-         <li class="nav-item">
-           <a class="nav-link" href="/search">Search</a>
-         </li>
-         <li class="nav-item">
-           <a class="nav-link" href="/friends">Friends</a>
-         </li>
-       </ul>
-       <div class="nav-item me-1">
-         <!-- TODO: For Logout, add a <a> tag with an attribute href to call the '/logout API -->
-         <a class="nav-link" href="/logout">Logout</a>
-       </div>
-     </div>
-   </div>
- </nav>
+  <nav class="navbar navbar-expand-sm border-bottom fixed-top bg-white">
+    <div class="container">
+
+      <!-- Colored logo top left -->
+      <a class="navbar-brand fw-bold" href="/discover" style="font-family: 'Nunito', sans-serif; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px;">
+        <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Dashboard</span>
+      </a>
+
+      <button
+        class="navbar-toggler ms-auto"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbar-collapse"
+        aria-controls="navbar"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/search">Search</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/friends">Friends</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <a class="nav-link" href="/logout">Logout</a>
+          <a href="/discover">
+            <img src="/images/MyMiniDashboardSquare.png" alt="Dashboard" style="width: 48px; height: 48px; border-radius: 10px; object-fit: cover;">
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </nav>
 </header>

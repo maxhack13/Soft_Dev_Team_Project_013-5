@@ -1,7 +1,13 @@
 {{> message}}
 
 <div class="container my-5">
-    <h1 class="mb-5 text-center">App Directory</h1>
+    <div class="text-center mb-5">
+    <h1 class="dashboard-title">
+      <span style="color: #3CC86A;">App</span><span style="color: #1EAACC;"> Dire</span><span style="color: #B87FD4;">ctory</span>
+    </h1>
+    <div class="title-divider"></div>
+  </div>
+
     
     <div class="row g-4 row-cols-1 row-cols-md-3">
         {{#each apps}}
@@ -30,3 +36,63 @@
         {{/each}}
     </div>
 </div>
+<style>
+  .dashboard-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .title-divider {
+    height: 3px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #3CC86A, #1EAACC, #B87FD4);
+    width: 180px;
+    margin: 10px auto 0;
+    opacity: 0.7;
+  }
+
+  .btn-dashboard {
+    background: linear-gradient(135deg, #1EAACC 0%, #B87FD4 100%);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(30,170,204,0.22);
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-dashboard:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-remove {
+    background: linear-gradient(135deg, #e05a7a 0%, #c0395a 100%);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(220,80,100,0.18);
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-remove:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .custom-card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none !important;
+    border-radius: 16px !important;
+  }
+  .custom-card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(30,170,204,0.15) !important;
+  }
+  .app-card {
+    padding: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+</style>

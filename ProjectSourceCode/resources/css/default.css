@@ -198,3 +198,19 @@ ul {
       transition: color 0.2s;
     }
     .link a:hover { color: var(--teal); }
+
+    .dashboard-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.title-divider {
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #3CC86A, #1EAACC, #B87FD4);
+  width: 180px;
+  margin: 10px auto 0;
+  opacity: 0.7;
+}

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS friends(
     CHECK(user_id <> friend_id)
 );
 
+/* Recipe App Data */
 CREATE TABLE IF NOT EXISTS recipeOfTheDay (
     id INT PRIMARY KEY DEFAULT 1,
     recipe_date VARCHAR(30),

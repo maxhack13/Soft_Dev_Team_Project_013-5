@@ -255,9 +255,6 @@ const current_date = current_date_query[0].recipe_date;
   })
   .then(async results => {
     console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
-    // res.render('pages/discover', { message: results.data });
-    /* myResults = results.data;
-    wasSuccessful = true; */
     const randomRecipe = results.data;
     await db.query(
         'UPDATE recipeOfTheDay SET recipe_of_the_day = $1 WHERE id = 1', [randomRecipe]
@@ -265,23 +262,8 @@ const current_date = current_date_query[0].recipe_date;
     res.render('pages/Recipe', { randomRecipe: randomRecipe });
   })
   .catch(error => {
-    // Handle errors
-    /* res.render('pages/discover', {
-      message: {
-        results: [],
-        errorMessage: error.data
-      }
-      } 
-    ) */
-    /* myResults = error.data;
-    wasSuccessful = false; */
     res.render('pages/Recipe', { message: "Error"});
 });
-/* if (wasSuccessful) {
-  res.render('pages/discover', { message: myResults });
-} else {
-  res.render('pages/discover', { message: myResults, results: [] });
-} */
   }
  else {
     const result = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
@@ -293,6 +275,30 @@ catch(err){
     res.render('pages/Recipe', { message: "Error"});
 }
 })
+
+app.get('/Recipe/searchByCuisine', auth, async (req, res) => {
+        await axios({
+            url: `https://www.themealdb.com/api/json/v1/1/filter.php`,
+            method: 'GET',
+            dataType: 'json',
+            headers: {
+                'Accept-Encoding': 'application/json',
+            },
+            params: {
+                a: req.query.cuisine
+            }
+        })
+        .then(async results => {
+            console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+            const searchedRecipes = results.data;
+            const getRecipeOfTheDay = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
+            const randomRecipe = getRecipeOfTheDay[0].recipe_of_the_day;
+            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes});
+        })
+        .catch(error => {
+            res.render('pages/Recipe', { message: "Error"});
+        });
+});
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

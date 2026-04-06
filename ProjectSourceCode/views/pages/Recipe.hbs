@@ -8,13 +8,14 @@
 -->
 <style>
     body{
-        padding-top: 130px;
+        padding-top: 100px;
     }
 </style>
 
 {{> message}}
 <h1 class="mb-4">Recipes</h1>
-<div class="container-fluid py-5 px-5" id="recipesBody">
+<div class="container-fluid py-5 px-5" id="recipesBody" style="height: 800px">
+<div class="row">
 <div class="col-md-6">
     <h2>Recipe of the Day</h2>
   {{#if randomRecipe}}
@@ -58,5 +59,126 @@
     No recipe found.
   </div>
   {{/if}}
+</div>
+<div class="col-md-6" style="display:flex; flex-direction:column; gap:5px; max-width: 600px; min-height:0; overflow-y: auto">  
+  <h2>Search by Cuisine: </h2>
+  <form action="/Recipe/searchByCuisine">
+  <select name="cuisine" style="max-height: 25px" id="searchByCuisine" onchange="this.form.submit()">
+    <option>Algerian</option>
+<option>American</option>
+<option>Argentinian</option>
+<option>Australian</option>
+<option>British</option>
+<option>Canadian</option>
+<option>Chinese</option>
+<option>Croatian</option>
+<option>Dutch</option>
+<option>Egyptian</option>
+<option>Filipino</option>
+<option>French</option>
+<option>Greek</option>
+<option>Indian</option>
+<option>Irish</option>
+<option>Italian</option>
+<option>Jamaican</option>
+<option>Japanese</option>
+<option>Kenyan</option>
+<option>Malaysian</option>
+<option>Mexican</option>
+<option>Moroccan</option>
+<option>Norwegian</option>
+<option>Polish</option>
+<option>Portuguese</option>
+<option>Russian</option>
+<option>Saudi Arabian</option>
+<option>Slovakian</option>
+<option>Spanish</option>
+<option>Syrian</option>
+<option>Thai</option>
+<option>Tunisian</option>
+<option>Turkish</option>
+<option>Ukrainian</option>
+<option>Uruguayan</option>
+<option>Venezuelan</option>
+<option>Vietnamese</option>
+  </select>
+  </form>
+  {{#if
+    filteredRecipes}}
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<div class="overflow-auto" style="height: 433px; overflow-y: scroll; min-height: 0;">
+  {{#each filteredRecipes.meals}}
+    <div class="card shadow-sm" style="max-width: 600px; height: 500px">
+      <div class="card-body">
+        <!-- Row 1: Image and Title -->
+        <div class="row mb-4 align-items-center">
+          <div class="col-md-3">
+            <img src="{{this.strMealThumb}}" class="img-fluid rounded" style="object-fit: cover; max-height: 150px; width: 100%;" alt="{{this.strMeal}}">
+          </div>
+          <div class="col-md-9">
+            <h3>{{this.strMeal}}</h3>
+          </div>
+        </div>
+        <!-- Row 2: Ingredients and Instructions -->
+        <div class="row" id="meal-{{this.idMeal}}" data-meal-id="{{this.idMeal}}">
+          <script>
+            (function() {
+              const script = document.currentScript;
+              const container = script.closest('[data-meal-id]');
+              const mealId = container.getAttribute('data-meal-id');
+
+              axios.get('https://www.themealdb.com/api/json/v1/1/lookup.php', {
+                params: { i: mealId }
+              })
+              .then(response => {
+                const recipeDetails = response.data.meals[0];
+                const row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.gap = '10px';
+
+                const ingredients = document.createElement('div');
+
+                let ingredientsList = '';
+                for (let i = 1; i <= 20; i++) {
+                  const ingredient = recipeDetails[`strIngredient${i}`];
+                  const measure = recipeDetails[`strMeasure${i}`];
+                  if (ingredient && ingredient.trim() !== '') {
+                    ingredientsList += `${ingredient}: ${measure} <br>`;
+                  }
+                }
+
+                ingredients.innerHTML = `
+                  <div class="col-md-4" style="width: 150px">
+                    <h5>Ingredients</h5>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                      ${ingredientsList}
+                    </div>
+                  </div>
+                `;
+
+                const instructions = document.createElement('div');
+                instructions.innerHTML = `
+                  <div class="col-md-8" style="width: 280px">
+                    <h5>Instructions</h5>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                      ${recipeDetails.strInstructions}
+                    </div>
+                  </div>
+                `;
+
+                row.appendChild(ingredients);
+                row.appendChild(instructions);
+                container.appendChild(row);
+              })
+              .catch(error => console.error(error));
+            })();
+          </script>
+        </div>                         <!-- /row 2 -->
+      </div>                           <!-- /card-body -->
+    </div>                             <!-- /card -->
+  {{/each}}
+</div>                                 <!-- /scrollable container -->
+  {{/if}}
+</div>
 </div>
 </div>

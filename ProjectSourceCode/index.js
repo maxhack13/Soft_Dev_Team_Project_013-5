@@ -160,6 +160,10 @@ app.get('/Recipe', auth, (req, res) => {
     res.redirect('/Recipe/recipeOfTheDay');
 });
 
+app.get('/search', auth, (req, res) => {
+    res.render('pages/Search');
+});
+
 // ---- Friends Routes ----
 
 app.get('/friends', auth, async (req, res) => {

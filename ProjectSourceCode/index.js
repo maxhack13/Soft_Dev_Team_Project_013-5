@@ -77,6 +77,28 @@ app.use(express.static(path.join(__dirname, 'resources'))); // Access resources 
 // <!-- Section 4 : API Routes -->
 // *****************************************************
 
+// List of Mini Apps
+const MINI_APPS = [
+    { 
+        name: 'Snow Report', 
+        route: '/SnowReport', 
+        image: '/Images/SnowReport.png', 
+        description: 'Check the latest snow report for your favorite ski resort.' 
+    },
+    { 
+        name: 'Trading Tracker', 
+        route: '/Trading', 
+        image: '/Images/TradingImage.jpg', 
+        description: 'Track your stock market trades and investments.' 
+    },
+    { 
+        name: 'Recipe of the Day', 
+        route: '/Recipe', 
+        image: '/Images/Recipe.png', 
+        description: "Check out today's featured recipe and cook something new!" 
+    }
+];
+
 // TODO - Include your API routes here
 
 app.get('/', (req, res) => {
@@ -144,8 +166,20 @@ const auth = (req, res, next) => {
 
 // Authentication Required
 
-app.get('/discover', auth, (req, res) => {
-    res.render('pages/discover');
+app.get('/discover', auth, async (req, res) => {
+    try {
+        const favs = await db.any(`SELECT app_name FROM user_favorites WHERE username = $1`, [req.session.user.username]);
+        const userApps = MINI_APPS.filter(app => favs.map(f => f.app_name).includes(app.name));
+        
+        res.render('pages/discover', {apps: userApps});
+    } catch (err) {
+        console.log(err);
+        res.render('pages/discover', {
+            apps: [],
+            message: 'Discover error',
+            error: true 
+        });
+    }
 });
 
 app.get('/SnowReport', auth, (req, res) => {
@@ -160,8 +194,48 @@ app.get('/Recipe', auth, (req, res) => {
     res.redirect('/Recipe/recipeOfTheDay');
 });
 
-app.get('/search', auth, (req, res) => {
-    res.render('pages/Search');
+app.get('/search', auth, async (req, res) => {
+    try {
+        const favs = await db.any(`SELECT app_name FROM user_favorites WHERE username = $1`, [req.session.user.username]);
+
+        const displayApps = MINI_APPS.map(app => {
+            return {
+                name: app.name,
+                route: app.route,
+                image: app.image,
+                description: app.description,
+                isFavorited: favs.map(f => f.app_name).includes(app.name)
+            };
+        });
+
+        res.render('pages/Search', {apps: displayApps});
+    } catch (err) {
+        console.log(err);
+        res.render('pages/Search', {
+            apps: MINI_APPS,
+            message: 'Search error',
+            error: true
+        });
+    }
+});
+
+app.post('/favorite/toggle', auth, async (req, res) => {
+    const username = req.session.user.username;
+    const appName = req.body.app_name;
+    const isFavorited = req.body.is_favorited === 'true';
+
+    try {
+        if (isFavorited) {
+            await db.none(`DELETE FROM user_favorites WHERE username = $1 AND app_name = $2`, [username, appName]);
+        } else {
+            await db.none(`INSERT INTO user_favorites (username, app_name) VALUES ($1, $2)`, [username, appName]);
+        }
+        
+        res.redirect('/search');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/search');
+    }
 });
 
 // ---- Friends Routes ----

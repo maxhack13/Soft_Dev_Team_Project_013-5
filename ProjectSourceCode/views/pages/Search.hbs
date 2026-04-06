@@ -1,1 +1,32 @@
-<h1>Search Mini Apps Here!</h1>
+{{> message}}
+
+<div class="container my-5">
+    <h1 class="mb-5 text-center">App Directory</h1>
+    
+    <div class="row g-4 row-cols-1 row-cols-md-3">
+        {{#each apps}}
+            <div class="col">
+                <div class="card h-100 shadow-sm custom-card-hover app-card">
+                    <img src="{{this.image}}" class="card-img-top" alt="{{this.name}} Image" style="height: 200px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column text-center">
+                        <h5 class="card-title fw-bold">{{this.name}}</h5>
+                        <p class="card-text text-muted">{{this.description}}</p>
+                        
+                        <form action="/favorite/toggle" method="POST" class="mt-auto" style="z-index: 2; position: relative;">
+                            <input type="hidden" name="app_name" value="{{this.name}}">
+                            <input type="hidden" name="is_favorited" value="{{this.isFavorited}}">
+                            
+                            {{#if this.isFavorited}}
+                                <button type="submit" class="btn btn-outline-danger w-100 mb-2">Remove from Favorites</button>
+                            {{else}}
+                                <button type="submit" class="btn btn-success w-100 mb-2">Add to Favorites</button>
+                            {{/if}}
+                        </form>
+                        
+                        <a href="{{this.route}}" class="btn btn-primary w-100 text-white" style="z-index: 2; position: relative;">Open {{this.name}}</a>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>

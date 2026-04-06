@@ -1,57 +1,31 @@
 {{> message}}
 
 <div class="container my-5">
-    <h1 class="mb-5 text-center">Mini Apps</h1>
-    <div class="row g-4">
-        <!-- App 1 -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm custom-card-hover">
-                <!-- Placeholder Image -->
-                <img src="/Images/SnowReport.png" class="card-img-top" alt="App 1 Image"
-                    style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column text-center">
-                    <h5 class="card-title fw-bold">Snow Report</h5>
-                    <p class="card-text text-muted">Check the latest snow report for your favorite ski resort.</p>
-                    <a href="/SnowReport" class="btn btn-primary mt-auto stretched-link text-white">Open Snow Report</a>
+    <h1 class="mb-5 text-center">My Mini Dashboard</h1>
+    <div class="row g-4 row-cols-1 row-cols-md-3">
+        {{#if apps.length}}
+            {{#each apps}}
+                <div class="col">
+                    <div class="card h-100 shadow-sm custom-card-hover app-card">
+                        <img src="{{this.image}}" class="card-img-top" alt="{{this.name}} Image" style="height: 200px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column text-center">
+                            <h5 class="card-title fw-bold">{{this.name}}</h5>
+                            <p class="card-text text-muted">{{this.description}}</p>
+                            <a href="{{this.route}}" class="btn btn-primary mt-auto stretched-link text-white">Open {{this.name}}</a>
+                        </div>
+                    </div>
                 </div>
+            {{/each}}
+        {{else}}
+            <div class="col-12 text-center mt-5 w-100">
+                <h4 class="text-muted">Your dashboard is currently empty!</h4>
+                <p>Please visit the <a href="/search">Search Page</a> to add some apps to your favorites.</p>
             </div>
-        </div>
-
-        <!-- App 2 -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm custom-card-hover">
-                <!-- Placeholder Image -->
-                <img src="/Images/TradingImage.jpg" class="card-img-top" alt="App 2 Image"
-                    style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column text-center">
-                    <h5 class="card-title fw-bold">Trading Tracker</h5>
-                    <p class="card-text text-muted">Track your stock market trades and investments.</p>
-                    <a href="/Trading" class="btn btn-primary mt-auto stretched-link text-white">Open Trading Tracker</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- App 3 -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm custom-card-hover">
-                <!-- Placeholder Image -->
-                <img src="/Images/Recipe.png" class="card-img-top" alt="App 3 Image"
-                    style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column text-center">
-                    <h5 class="card-title fw-bold">Recipe of the Day</h5>
-                    <p class="card-text text-muted">Check out today's featured recipe and cook something new!</p>
-                    <form action="/Recipe">
-                        <a href="/Recipe" class="btn btn-primary mt-auto stretched-link text-white">Open Recipe of the
-                            Day</a>
-                    </form>
-                </div>
-            </div>
-        </div>
+        {{/if}}
     </div>
 </div>
 
 <style>
-    /* Optional: Adds a slight lift effect when hovering over the cards */
     .custom-card-hover {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -59,5 +33,11 @@
     .custom-card-hover:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .app-card {
+        padding: 0 !important; 
+        max-width: 100% !important; 
+        overflow: hidden; 
     }
 </style>

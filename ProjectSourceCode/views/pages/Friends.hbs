@@ -1,22 +1,25 @@
 {{> message}}
 
 <div class="container my-5">
-    <h1 class="mb-4 text-center">My Friends</h1>
+    <div class="text-center mb-5">
+    <h1 class="dashboard-title">
+  <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;"> Mini</span><span style="color: #B87FD4;">Friends</span>
+</h1>
+    <div class="title-divider"></div>
+  </div>
 
     <!-- Add Friend Form -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">Add a Friend</h5>
-                    <form action="/friends/add" method="POST" class="d-flex gap-2">
-                        <input type="text" name="friend_username" class="form-control" placeholder="Enter username" required>
-                        <button type="submit" class="btn btn-primary text-white" style="white-space: nowrap;">Add Friend</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="row justify-content-center mb-5">
+  <div class="col-md-6">
+    <div class="friends-card">
+      <h5 class="fw-bold mb-3" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">Add a Friend</h5>
+      <form action="/friends/add" method="POST" class="d-flex gap-2">
+        <input type="text" name="friend_username" class="friend-input form-control" placeholder="Enter username" required>
+        <button type="submit" class="btn btn-dashboard text-white" style="white-space: nowrap;">Add Friend</button>
+      </form>
     </div>
+  </div>
+</div>
 
     <!-- Friends List -->
     {{#if friends.length}}
@@ -52,4 +55,60 @@
         transform: translateY(-3px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
     }
+
+    .friends-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px 28px;
+    box-shadow: 0 8px 40px rgba(30,170,204,0.10), 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .friend-input {
+    border: 2px solid #e3e6f0 !important;
+    border-radius: 10px !important;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: #2d2d3a;
+    background: #fafbff;
+  }
+  .friend-input:focus {
+    border-color: #1EAACC !important;
+    box-shadow: 0 0 0 3px rgba(30,170,204,0.14) !important;
+  }
+
+  .friends-list {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(30,170,204,0.10), 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .friend-item {
+    border: none !important;
+    border-bottom: 1px solid #e3e6f0 !important;
+    padding: 16px 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .friend-item:last-child {
+    border-bottom: none !important;
+  }
+  .friend-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30,170,204,0.12) !important;
+    z-index: 1;
+    position: relative;
+  }
+
+  .btn-remove {
+    background: linear-gradient(135deg, #e05a7a 0%, #c0395a 100%);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(220,80,100,0.18);
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-remove:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
 </style>

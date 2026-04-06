@@ -1,7 +1,14 @@
 {{> message}}
 
 <div class="container my-5">
-    <h1 class="mb-5 text-center">My Mini Dashboard</h1>
+    <div class="text-center mb-5">
+    <h1 class="dashboard-title">
+      <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Dashboard</span>
+    </h1>
+    <div class="title-divider"></div>
+  </div>
+
+
     <div class="row g-4 row-cols-1 row-cols-md-3">
         {{#if apps.length}}
             {{#each apps}}
@@ -17,27 +24,73 @@
                 </div>
             {{/each}}
         {{else}}
-            <div class="col-12 text-center mt-5 w-100">
-                <h4 class="text-muted">Your dashboard is currently empty!</h4>
-                <p>Please visit the <a href="/search">Search Page</a> to add some apps to your favorites.</p>
-            </div>
+            <div class="col-12 text-center mt-4">
+        <div class="empty-state mx-auto">
+          <div class="empty-icon mb-3">📋</div>
+          <h4 class="fw-bold mb-2" style="color: #2d2d3a;">Your dashboard is empty!</h4>
+          <p class="text-muted mb-4">Head to the Search page to find and add your favourite apps.</p>
+          <a href="/search" class="btn btn-dashboard text-white px-4">Go to Search</a>
+        </div>
+      </div>
         {{/if}}
     </div>
 </div>
 
 <style>
-    .custom-card-hover {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+    .dashboard-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
 
-    .custom-card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-    }
+  .title-divider {
+    height: 3px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #3CC86A, #1EAACC, #B87FD4);
+    width: 180px;
+    margin: 10px auto 0;
+    opacity: 0.7;
+  }
 
-    .app-card {
-        padding: 0 !important; 
-        max-width: 100% !important; 
-        overflow: hidden; 
-    }
+  .btn-dashboard {
+    background: linear-gradient(135deg, #1EAACC 0%, #B87FD4 100%);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(30,170,204,0.22);
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-dashboard:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  /* Cards */
+  .custom-card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none !important;
+    border-radius: 16px !important;
+  }
+  .custom-card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(30,170,204,0.15) !important;
+  }
+  .app-card {
+    padding: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  .empty-state {
+    max-width: 420px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 48px 36px;
+    box-shadow: 0 8px 40px rgba(30,170,204,0.10), 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .empty-icon {
+    font-size: 3rem;
+  }
 </style>

@@ -1,1 +1,64 @@
-<h1>Snow Report</h1>
+{{> message}}
+
+<div class="container my-5">
+    <h1 class="mb-2 text-center">❄️ Snow Report</h1>
+    <p class="text-center text-muted mb-4">Select a ski resort for a 7-day forecast</p>
+
+    <!-- Resort Dropdown -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+            <form action="/SnowReport" method="GET" class="input-group">
+                <select name="resort" class="form-select">
+                    <option value="">-- Pick a Resort --</option>
+                    {{#each resortNames}}
+                        <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+                <button type="submit" class="btn btn-primary">Get Forecast</button>
+            </form>
+        </div>
+    </div>
+
+    {{#if error}}
+        <div class="alert alert-danger text-center">Could not load forecast. Please try again.</div>
+    {{/if}}
+
+    {{#if resort}}
+        <h3 class="text-center mb-3">{{resort}}</h3>
+    {{/if}}
+
+    {{#if forecast}}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Snowfall (in)</th>
+                    <th>High (°F)</th>
+                    <th>Low (°F)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each forecast}}
+                <tr>
+                    <td>{{this.date}}</td>
+                    <td>
+                        {{#if this.snowfall}}
+                            ❄️ {{this.snowfall}}"
+                        {{else}}
+                            —
+                        {{/if}}
+                    </td>
+                    <td>{{this.high}}°</td>
+                    <td>{{this.low}}°</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    {{/if}}
+
+    <div class="text-center mt-3">
+        <a href="/discover" class="btn btn-secondary">← Back to Discover</a>
+    </div>
+</div>

@@ -182,8 +182,57 @@ app.get('/discover', auth, async (req, res) => {
     }
 });
 
-app.get('/SnowReport', auth, (req, res) => {
-    res.render('pages/SnowReport');
+// Ski resort coordinates (name -> lat/lon)
+const skiResorts = {
+    'Vail, CO': { lat: 39.64, lon: -106.37 },
+    'Breckenridge, CO': { lat: 39.48, lon: -106.07 },
+    'Aspen, CO': { lat: 39.19, lon: -106.82 },
+    'Park City, UT': { lat: 40.65, lon: -111.51 },
+    'Jackson Hole, WY': { lat: 43.59, lon: -110.83 },
+    'Mammoth Mountain, CA': { lat: 37.63, lon: -119.03 },
+    'Big Sky, MT': { lat: 45.28, lon: -111.40 },
+    'Copper Mountain, CO': { lat: 39.50, lon: -106.14 },
+    'Eldora Mountain Resort, CO': { lat: 39.94, lon: -105.56 },
+};
+
+app.get('/SnowReport', auth, async (req, res) => {
+    const resort = req.query.resort;
+    const resortNames = Object.keys(skiResorts); // List of resort names for the dropdown
+
+    // If no resort selected yet, just show the dropdown
+    if (!resort || !skiResorts[resort]) {
+        return res.render('pages/SnowReport', { forecast: null, resort: null, resortNames });
+    }
+
+    try {
+        const coords = skiResorts[resort];
+
+        // Call Open-Meteo API
+        const response = await axios.get('https://api.open-meteo.com/v1/forecast', {
+            params: {
+                latitude: coords.lat,
+                longitude: coords.lon,
+                daily: 'snowfall_sum,temperature_2m_max,temperature_2m_min',
+                temperature_unit: 'fahrenheit',
+                timezone: 'America/Denver',
+                forecast_days: 7
+            }
+        });
+
+        const daily = response.data.daily;
+
+        const forecast = daily.time.map((date, i) => ({
+            date: date,
+            snowfall: daily.snowfall_sum[i],
+            high: Math.round(daily.temperature_2m_max[i]),
+            low: Math.round(daily.temperature_2m_min[i]),
+        }));
+
+        res.render('pages/SnowReport', { forecast, resort, resortNames });
+    } catch (err) {
+        console.error('Snow Report API error:', err.message);
+        res.render('pages/SnowReport', { forecast: null, resort, resortNames, error: true });
+    }
 });
 
 app.get('/Trading', auth, (req, res) => {

@@ -103,6 +103,11 @@
 <option>Vietnamese</option>
   </select>
   </form>
+  {{#if selectedCuisine}}
+  <script>
+      document.getElementById('searchByCuisine').value = '{{selectedCuisine}}';
+  </script>
+  {{/if}}
   {{#if
     filteredRecipes}}
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

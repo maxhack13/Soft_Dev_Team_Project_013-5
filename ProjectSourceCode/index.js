@@ -235,8 +235,62 @@ app.get('/SnowReport', auth, async (req, res) => {
     }
 });
 
-app.get('/Trading', auth, (req, res) => {
-    res.render('pages/Trading');
+app.get('/Trading', auth, async (req, res) => {
+    const ticker = req.query.ticker; // Gets ticker from search form (?ticker=AAPL)
+
+    // If no ticker searched, just show the search form
+    if (!ticker) {
+        return res.render('pages/Trading', { stock: null, news: null, ticker: null });
+    }
+
+    try {
+        // Call Alpha Vantage for stock quote
+        const quoteResponse = await axios.get('https://www.alphavantage.co/query', {
+            params: {
+                function: 'GLOBAL_QUOTE',
+                symbol: ticker,
+                apikey: process.env.API_KEY
+            }
+        });
+
+        const quoteData = quoteResponse.data['Global Quote'];
+        let stock = null;
+
+        if (quoteData && quoteData['01. symbol']) {
+            stock = {
+                symbol: quoteData['01. symbol'],
+                price: parseFloat(quoteData['05. price']).toFixed(2),
+                change: parseFloat(quoteData['09. change']).toFixed(2),
+                changePercent: quoteData['10. change percent'],
+                high: parseFloat(quoteData['03. high']).toFixed(2),
+                low: parseFloat(quoteData['04. low']).toFixed(2),
+                volume: parseInt(quoteData['06. volume']).toLocaleString(),
+            };
+        }
+
+        // Call Alpha Vantage for news
+        const newsResponse = await axios.get('https://www.alphavantage.co/query', {
+            params: {
+                function: 'NEWS_SENTIMENT',
+                tickers: ticker,
+                limit: 5,
+                apikey: process.env.API_KEY
+            }
+        });
+
+        const newsData = newsResponse.data.feed || [];
+        const news = newsData.slice(0, 5).map(article => ({
+            title: article.title,
+            url: article.url,
+            source: article.source,
+            summary: article.summary ? article.summary.substring(0, 150) + '...' : '',
+        }));
+
+        res.render('pages/Trading', { stock, news, ticker });
+    } catch (err) {
+        console.error('Trading API error:', err.message);
+        res.render('pages/Trading', { stock: null, news: null, ticker, error: true });
+    }
 });
 
 app.get('/Recipe', auth, (req, res) => {
@@ -420,7 +474,7 @@ app.get('/Recipe/searchByCuisine', auth, async (req, res) => {
             const searchedRecipes = results.data;
             const getRecipeOfTheDay = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
             const randomRecipe = getRecipeOfTheDay[0].recipe_of_the_day;
-            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes});
+            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes, selectedCuisine: req.query.cuisine});
         })
         .catch(error => {
             res.render('pages/Recipe', { message: "Error"});

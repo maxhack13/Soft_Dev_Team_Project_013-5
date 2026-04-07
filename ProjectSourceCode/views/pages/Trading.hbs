@@ -1,1 +1,257 @@
-<h1>Trading Tracker</h1>
+{{> message}}
+
+<style>
+    /* Dark trading theme */
+    body { background: #0d1117 !important; color: #e6edf3 !important; align-items: flex-start !important; justify-content: flex-start !important; min-height: auto !important; }
+
+    .trading-page, .trading-page * { color: #e6edf3; }
+    .trading-page h1, .trading-page h3, .trading-page h4 { color: #ffffff !important; }
+    .trading-page p, .trading-page td, .trading-page th, .trading-page label { color: #e6edf3 !important; }
+    .trading-page input[type="text"] { color: #e6edf3 !important; }
+
+    /* Search bar */
+    .trading-page .form-control {
+        background: #161b22;
+        border: 1px solid #30363d;
+        color: #e6edf3;
+    }
+    .trading-page .form-control:focus {
+        background: #161b22;
+        border-color: #58a6ff;
+        color: #e6edf3;
+        box-shadow: 0 0 0 3px rgba(88,166,255,0.2);
+    }
+    .trading-page .btn-primary {
+        background: linear-gradient(135deg, #238636, #1f6feb) !important;
+        border: none; width: auto; margin-top: 0;
+    }
+    .trading-page .btn-secondary {
+        background: #21262d !important;
+        border: 1px solid #30363d;
+        color: #e6edf3; width: auto; margin-top: 0;
+    }
+
+    /* Stock card */
+    .stock-card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .stock-card .card-header {
+        background: #0d1117 !important;
+        border-bottom: 2px solid #238636;
+        padding: 16px 20px;
+    }
+    .stock-card .card-header h3 { color: #58a6ff !important; margin: 0; font-size: 1.5rem; }
+    .stock-card .card-body { padding: 20px; }
+    .stock-card table td { color: #040404 !important; border: none; padding: 8px 12px; font-size: 1.03em; }
+    .stock-card table td strong { color: #a0aabb !important; }
+
+    /* Candle decoration */
+    .candle-bar {
+        display: flex; align-items: flex-end; gap: 6px;
+        justify-content: center; margin: 16px 0; height: 60px;
+    }
+    .candle {
+        width: 10px; border-radius: 2px; position: relative;
+    }
+    .candle::before {
+        content: ''; position: absolute; width: 2px;
+        background: inherit; left: 4px; top: -6px; height: 6px;
+    }
+    .candle::after {
+        content: ''; position: absolute; width: 2px;
+        background: inherit; left: 4px; bottom: -5px; height: 5px;
+    }
+    .candle.green { background: #3fb950; }
+    .candle.red { background: #f85149; }
+
+    /* Live chart */
+    .chart-wrapper {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    .chart-wrapper h4 { color: #e6edf3; padding: 16px 20px 0; margin: 0; }
+
+    /* News cards */
+    .news-card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    .news-card a { color: #58a6ff; }
+    .news-card a:hover { color: #79c0ff; }
+    .news-card small { color: #8b949e; }
+    .news-card p { color: #b0bac5; }
+
+    .alert-danger { background: #1c1015; border-color: #f85149; color: #ff8888; }
+    .alert-warning { background: #1c1a10; border-color: #d29922; color: #e8c44a; }
+    .section-label { color: #8b949e; }
+</style>
+
+<div class="container my-5 trading-page">
+    <h1 class="mb-2 text-center">📈 Trading Tracker</h1>
+    <p class="text-center mb-2" style="color:#8b949e">Search any stock ticker for a quote, live chart, and news</p>
+
+    <!-- Candle decoration -->
+    <div class="candle-bar">
+        <div class="candle green" style="height:30px"></div>
+        <div class="candle red" style="height:45px"></div>
+        <div class="candle green" style="height:20px"></div>
+        <div class="candle green" style="height:55px"></div>
+        <div class="candle red" style="height:25px"></div>
+        <div class="candle green" style="height:40px"></div>
+        <div class="candle red" style="height:18px"></div>
+        <div class="candle green" style="height:50px"></div>
+        <div class="candle red" style="height:35px"></div>
+        <div class="candle green" style="height:60px"></div>
+        <div class="candle red" style="height:28px"></div>
+        <div class="candle green" style="height:45px"></div>
+    </div>
+
+    <!-- Search Form with autocomplete -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+            <form action="/Trading" method="GET" class="input-group">
+                <input type="text" name="ticker" list="tickers" class="form-control" placeholder="e.g. AAPL, TSLA, MSFT" value="{{ticker}}" required autocomplete="off">
+                <datalist id="tickers">
+                    <option value="AAPL">Apple</option>
+                    <option value="MSFT">Microsoft</option>
+                    <option value="GOOGL">Google</option>
+                    <option value="AMZN">Amazon</option>
+                    <option value="TSLA">Tesla</option>
+                    <option value="META">Meta</option>
+                    <option value="NVDA">NVIDIA</option>
+                    <option value="AMD">AMD</option>
+                    <option value="NFLX">Netflix</option>
+                    <option value="DIS">Disney</option>
+                    <option value="JPM">JPMorgan</option>
+                    <option value="V">Visa</option>
+                    <option value="MA">Mastercard</option>
+                    <option value="BA">Boeing</option>
+                    <option value="INTC">Intel</option>
+                    <option value="UBER">Uber</option>
+                    <option value="COIN">Coinbase</option>
+                    <option value="SPY">S&P 500 ETF</option>
+                    <option value="QQQ">NASDAQ ETF</option>
+                    <option value="DIA">Dow Jones ETF</option>
+                </datalist>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
+    {{#if error}}
+        <div class="alert alert-danger text-center">Could not load data. Please check the ticker and try again.</div>
+    {{/if}}
+
+    {{#if stock}}
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <div class="card stock-card">
+                <div class="card-header">
+                    <h3>{{stock.symbol}}</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td><strong>Price</strong></td>
+                            <td style="font-size:1.4em; font-weight:bold; color:#fff;">${{stock.price}}</td>
+                            <td><strong>Change</strong></td>
+                            <td style="font-weight:bold;">{{stock.change}} ({{stock.changePercent}})</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Day High</strong></td>
+                            <td>${{stock.high}}</td>
+                            <td><strong>Day Low</strong></td>
+                            <td>${{stock.low}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Volume</strong></td>
+                            <td>{{stock.volume}}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if ticker}}
+        {{#unless stock}}
+            {{#unless error}}
+                <div class="alert alert-warning text-center">No stock data found for "{{ticker}}". Check the ticker symbol.</div>
+            {{/unless}}
+        {{/unless}}
+    {{/if}}
+
+    <!-- Live TradingView Chart -->
+    {{#if ticker}}
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <div class="chart-wrapper">
+                <h4>📊 Live Chart — {{ticker}}</h4>
+                <div id="tradingview-widget" style="padding: 10px 20px 20px;">
+                    <!-- TradingView Widget - Free, no API key needed -->
+                    <div class="tradingview-widget-container">
+                        <div id="tradingview_chart"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                        <script type="text/javascript">
+                            new TradingView.widget({
+                                "autosize": false,
+                                "symbol": "{{ticker}}",
+                                "interval": "D",
+                                "timezone": "America/Denver",
+                                "theme": "dark",
+                                "style": "1",
+                                "locale": "en",
+                                "toolbar_bg": "#161b22",
+                                "enable_publishing": false,
+                                "hide_top_toolbar": false,
+                                "hide_legend": false,
+                                "save_image": false,
+                                "container_id": "tradingview_chart",
+                                "width": "100%",
+                                "height": "600"
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if news}}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h4 class="mb-3 section-label">📰 Recent News</h4>
+            {{#each news}}
+            <div class="card news-card">
+                <div class="card-body py-2">
+                    <a href="{{this.url}}" target="_blank" class="text-decoration-none">
+                        <strong>{{this.title}}</strong>
+                    </a>
+                    <br>
+                    <small>{{this.source}}</small>
+                    {{#if this.summary}}
+                        <p class="mb-0 mt-1 small">{{this.summary}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="text-center mt-4">
+        <a href="/discover" class="btn btn-secondary">← Back to Discover</a>
+    </div>
+</div>

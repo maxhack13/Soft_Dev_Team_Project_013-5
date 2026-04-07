@@ -256,7 +256,7 @@ app.get('/Trading', auth, async (req, res) => {
         const quoteData = quoteResponse.data['Global Quote'];
         let stock = null;
 
-        if (quoteData && quoteData['01. symbol']) {
+        if (quoteData && quoteData['01. symbol'] && quoteData['05. price'] && quoteData['05. price'] !== '0.0000') {
             stock = {
                 symbol: quoteData['01. symbol'],
                 price: parseFloat(quoteData['05. price']).toFixed(2),

@@ -3,6 +3,6 @@ Release Notes 4-7, Version 1.2
 - Added a new database table to keep track of and store which mini apps the user has favorited
 - Created an array to store our current mini apps so we can dynamically add or delete from it if we change the number of mini apps our dashboard features in the future. Updated the Dashboard and Search pages to display cards based on the mini app array
 - Made a new route used to toggle whether a mini app is favorited or not for that particular user
--Made pages uniform with style
-
-- got all mini apps working.
+- Made pages uniform with style
+- Accomplished functional prototpyes for all three mini apps
+- Added the ability to add other users as friends

@@ -20,3 +20,18 @@ Aiden will make a functional prototype of the recipe mini app
 
 Release notes:
 In Milestone Submission folder we pushed our release notes to summarize what features we have implemented since last meeting.
+
+4/7 Meeting Notes
+-We showed our Web Page, Max showed the Snow Report, Recipe, and the function of our Website.
+-We need a profile page
+	-settings, username profile, etc
+-We need to have functions with friends and chatting
+	-similar to email/inbox to chat
+-Share mini app button(maybe built into mini app to share to friends)
+-Mini app-specific history, like favorited recipes or saved mountains/carpool
+-On the profile, you can see what certain users are doing
+-Make sure APIs are part of the website
+-Improve the UI for add and remove, maybe two separate buttons
+-ready up feature for snow
+-definitely chat and friends email
+-add more detail to mini apps

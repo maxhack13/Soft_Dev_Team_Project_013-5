@@ -89,7 +89,7 @@ const MINI_APPS = [
         name: 'Trading Tracker', 
         route: '/Trading', 
         image: '/Images/TradingImage.jpg', 
-        description: 'Track your stock market trades and investments.' 
+        description: 'Track all of your stock market trades and investments here.' 
     },
     { 
         name: 'Recipe of the Day', 

@@ -32,6 +32,9 @@ const hbs = handlebars.create({
     extname: 'hbs',
     layoutsDir: __dirname + '/views/layouts',
     partialsDir: __dirname + '/views/partials',
+    helpers: {
+        eq: (a, b) => a === b,
+    },
 });
 
 // database configuration
@@ -364,6 +367,54 @@ app.post('/favorite/toggle', auth, async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({success: false, message: 'Favorite error', error: true});
+    }
+});
+
+// ---- Chat Routes ----
+
+app.get('/chat', auth, async (req, res) => {
+    const selectedFriend = req.query.friend || null;
+    try {
+        const friends = await db.any(
+            `SELECT friend_id FROM friends WHERE user_id = $1 ORDER BY friend_id ASC`,
+            [req.session.user.username]
+        );
+
+        let messages = [];
+        if (selectedFriend) {
+            messages = await db.any(
+                `SELECT * FROM messages 
+                 WHERE (sender = $1 AND receiver = $2) OR (sender = $2 AND receiver = $1) 
+                 ORDER BY sent_at ASC`,
+                [req.session.user.username, selectedFriend]
+            );
+        }
+
+        res.render('pages/chat', { friends, messages, selectedFriend, currentUser: req.session.user.username });
+    } catch (err) {
+        console.log(err);
+        res.render('pages/chat', { friends: [], messages: [], message: 'Error loading chat.', error: true });
+    }
+});
+
+app.post('/chat/send', auth, async (req, res) => {
+    const sender = req.session.user.username;
+    const receiver = req.body.receiver;
+    const msg = req.body.message;
+
+    if (!receiver || !msg) {
+        return res.redirect('/chat');
+    }
+
+    try {
+        await db.none(
+            `INSERT INTO messages (sender, receiver, message) VALUES ($1, $2, $3)`,
+            [sender, receiver, msg]
+        );
+        res.redirect('/chat?friend=' + encodeURIComponent(receiver));
+    } catch (err) {
+        console.log(err);
+        res.redirect('/chat?friend=' + encodeURIComponent(receiver));
     }
 });
 

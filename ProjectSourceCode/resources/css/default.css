@@ -57,6 +57,18 @@ ul {
       display: flex;
       flex-direction: column;
       align-items: center;
+      overflow-y: auto !important;
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      min-height: auto !important;
+    }
+    .center-page{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      width: 100%;
     }
 
     .card {

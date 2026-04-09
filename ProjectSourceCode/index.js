@@ -12,6 +12,16 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'resources/images/uploads/'));
+    },
+    filename: (req, file, cb) => {
+    cb(null, req.session.user.username + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage });
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -92,7 +102,7 @@ const MINI_APPS = [
         name: 'Trading Tracker', 
         route: '/Trading', 
         image: '/Images/TradingImage.jpg', 
-        description: 'Track your stock market trades and investments.' 
+        description: 'Track all of your stock market trades and investments here.' 
     },
     { 
         name: 'Recipe of the Day', 
@@ -166,6 +176,22 @@ const auth = (req, res, next) => {
     }
     next();
 };
+
+// Make profile available on all pages
+app.use(async (req, res, next) => {
+    if (req.session.user) {
+        try {
+            const userProfile = await db.oneOrNone(
+                'SELECT * FROM user_profile WHERE username = $1',
+                [req.session.user.username]
+            );
+            res.locals.userProfile = userProfile;
+        } catch (err) {
+            res.locals.userProfile = null;
+        }
+    }
+    next();
+});
 
 // Authentication Required
 
@@ -530,6 +556,70 @@ app.get('/Recipe/searchByCuisine', auth, async (req, res) => {
         .catch(error => {
             res.render('pages/Recipe', { message: "Error"});
         });
+});
+
+// GET /profile
+app.get('/profile', async (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    try {
+        const profile = await db.oneOrNone(
+            'SELECT * FROM user_profile WHERE username = $1',
+            [req.session.user.username]
+        );
+        const favorites = await db.any(
+            'SELECT * FROM user_favorites WHERE username = $1',
+            [req.session.user.username]
+        );
+
+        const favoritesWithDetails = favorites.map(fav => {
+            const app = MINI_APPS.find(a => a.name === fav.app_name);
+            return { ...fav, image: app?.image, route: app?.route };
+        });
+
+        res.render('pages/profile', {
+            user: req.session.user.username,
+            profile,
+            favorites: favoritesWithDetails
+        });
+    } catch (error) {
+        console.log('ERROR:', error.message || error);
+    }
+});
+
+// POST /profile/update
+app.post('/profile/update', async (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    const { email } = req.body;
+    try {
+        await db.none(
+            `INSERT INTO user_profile (username, email)
+             VALUES ($1, $2)
+             ON CONFLICT (username)
+             DO UPDATE SET email = $2`,
+            [req.session.user.username, email]
+        );
+        res.redirect('/profile');
+    } catch (error) {
+        console.log('ERROR:', error.message || error);
+    }
+});
+
+// POST /profile/upload
+app.post('/profile/upload', upload.single('profile_picture'), async (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    try {
+        const imagePath = '/images/uploads/' + req.file.filename;
+        await db.none(
+            `INSERT INTO user_profile (username, profile_picture)
+             VALUES ($1, $2)
+             ON CONFLICT (username)
+             DO UPDATE SET profile_picture = $2`,
+            [req.session.user.username, imagePath]
+        );
+        res.redirect('/profile');
+    } catch (error) {
+        console.log('ERROR:', error.message || error);
+    }
 });
 
 // *****************************************************

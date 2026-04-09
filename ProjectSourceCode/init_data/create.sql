@@ -35,4 +35,8 @@ CREATE TABLE IF NOT EXISTS messages(
     receiver VARCHAR(50) NOT NULL REFERENCES users(username),
     message TEXT NOT NULL,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS user_profile (
+    username VARCHAR(50) PRIMARY KEY REFERENCES users(username),
+    email VARCHAR(100),
+    profile_picture VARCHAR(255) DEFAULT '/images/default-avatar.png'
 );

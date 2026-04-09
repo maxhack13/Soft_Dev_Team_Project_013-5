@@ -2,7 +2,6 @@
   <nav class="navbar navbar-expand-sm border-bottom fixed-top bg-white">
     <div class="container">
 
-      <!-- Colored logo top left -->
       <a class="navbar-brand fw-bold" href="/discover" style="font-family: 'Nunito', sans-serif; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px;">
         <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Dashboard</span>
       </a>
@@ -33,14 +32,14 @@
         
         <div class="d-flex align-items-center gap-2">
           <form method="get" action="/logout">
-            <button style="background: none; border: none" onclick="submit">Logout
-            </button>
+            <button style="background: none; border: none;" type="submit">Logout</button>
           </form>
-          <form action="/logout">
-          <button style="background: none; border: none" onclick="submit">
-            <img src="/images/MyMiniDashboardSquare.png" alt="Dashboard" style="width: 48px; height: 48px; border-radius: 10px; object-fit: cover;">
-          </button>
-          </form>
+          <a href="/profile">
+            <img 
+              src="{{#if userProfile.profile_picture}}{{userProfile.profile_picture}}{{else}}/images/MyMiniDashboardSquare.png{{/if}}" 
+              alt="Profile" 
+              style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #e3e6f0;">
+          </a>
         </div>
       </div>
 

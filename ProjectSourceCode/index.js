@@ -237,7 +237,7 @@ app.get('/SnowReport', auth, async (req, res) => {
 
 app.get('/Trading', auth, async (req, res) => {
     const ticker = req.query.ticker; // Gets ticker from search form (?ticker=AAPL)
-
+    
     // If no ticker searched, just show the search form
     if (!ticker) {
         return res.render('pages/Trading', { stock: null, news: null, ticker: null });

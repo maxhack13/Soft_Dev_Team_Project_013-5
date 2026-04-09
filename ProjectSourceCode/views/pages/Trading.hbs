@@ -1,5 +1,9 @@
 {{> message}}
 
+<div id="disclaimer" style="margin-top:70px; background:#332d1a; color:#e8c44a; text-align:center; padding:10px; cursor:pointer; border:1px solid #d29922;" onclick="this.style.display='none'">
+    ⚠️ We are not responsible for any stock market losses or unfortunate financial decisions (click to dismiss)
+</div>
+
 <style>
     /* Dark trading theme */
     body { background: #0d1117 !important; color: #e6edf3 !important; align-items: flex-start !important; justify-content: flex-start !important; min-height: auto !important; }
@@ -41,10 +45,10 @@
     .stock-card .card-header {
         background: #0d1117 !important;
         border-bottom: 2px solid #238636;
-        padding: 16px 20px;
+        padding: 20px 20px;
     }
     .stock-card .card-header h3 { color: #58a6ff !important; margin: 0; font-size: 1.5rem; }
-    .stock-card .card-body { padding: 20px; }
+    .stock-card .card-body { padding: 25px; }
     .stock-card table td { color: #040404 !important; border: none; padding: 8px 12px; font-size: 1.03em; }
     .stock-card table td strong { color: #a0aabb !important; }
 
@@ -225,28 +229,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    {{/if}}
-
-    {{#if news}}
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h4 class="mb-3 section-label">📰 Recent News</h4>
-            {{#each news}}
-            <div class="card news-card">
-                <div class="card-body py-2">
-                    <a href="{{this.url}}" target="_blank" class="text-decoration-none">
-                        <strong>{{this.title}}</strong>
-                    </a>
-                    <br>
-                    <small>{{this.source}}</small>
-                    {{#if this.summary}}
-                        <p class="mb-0 mt-1 small">{{this.summary}}</p>
-                    {{/if}}
-                </div>
-            </div>
-            {{/each}}
         </div>
     </div>
     {{/if}}

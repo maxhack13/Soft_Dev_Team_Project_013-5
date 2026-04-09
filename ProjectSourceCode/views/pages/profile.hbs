@@ -18,9 +18,9 @@
       <!-- Profile Picture -->
       <div class="profile-card text-center mb-4">
         <img 
-          src="{{#if profile.profile_picture}}{{profile.profile_picture}}{{else}}/images/default-avatar.png{{/if}}" 
-          alt="Profile Picture" 
-          class="profile-avatar mb-3"
+        src="{{#if profile.profile_picture}}{{profile.profile_picture}}{{else}}/Images/profile.png{{/if}}" 
+        alt="Profile Picture" 
+        class="profile-avatar mb-3"
         />
         <h5 class="fw-bold" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">{{user}}</h5>
         <form action="/profile/upload" method="POST" enctype="multipart/form-data" class="mt-3">

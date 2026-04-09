@@ -325,7 +325,7 @@ app.get('/search', auth, async (req, res) => {
 app.post('/favorite/toggle', auth, async (req, res) => {
     const username = req.session.user.username;
     const appName = req.body.app_name;
-    const isFavorited = req.body.is_favorited === 'true';
+    const isFavorited = req.body.is_favorited; 
 
     try {
         if (isFavorited) {
@@ -333,11 +333,11 @@ app.post('/favorite/toggle', auth, async (req, res) => {
         } else {
             await db.none(`INSERT INTO user_favorites (username, app_name) VALUES ($1, $2)`, [username, appName]);
         }
-        
-        res.redirect('/search');
+
+        res.json({success: true, newState: !isFavorited});
     } catch (err) {
         console.log(err);
-        res.redirect('/search');
+        res.status(500).json({success: false, message: 'Favorite error', error: true});
     }
 });
 

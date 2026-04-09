@@ -6,3 +6,4 @@ Release Notes 4-7, Version 1.2
 - Made pages uniform with style
 - Accomplished functional prototpyes for all three mini apps
 - Added the ability to add other users as friends
+- Added Recipe of the Day and Search by Cuisine to Recipe mini-app

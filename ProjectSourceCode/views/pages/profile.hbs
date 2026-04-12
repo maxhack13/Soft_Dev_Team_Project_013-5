@@ -1,0 +1,183 @@
+{{> message}}
+
+<div class="container my-5">
+
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="dashboard-title">
+      <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Profile</span>
+    </h1>
+    <div class="title-divider"></div>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+
+    <!-- Left Column: Profile Picture + Info -->
+    <div class="col-md-4">
+
+      <!-- Profile Picture -->
+      <div class="profile-card text-center mb-4">
+        <img 
+        src="{{#if profile.profile_picture}}{{profile.profile_picture}}{{else}}/Images/profile.png{{/if}}" 
+        alt="Profile Picture" 
+        class="profile-avatar mb-3"
+        />
+        <h5 class="fw-bold" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">{{user}}</h5>
+        <form action="/profile/upload" method="POST" enctype="multipart/form-data" class="mt-3">
+          <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="d-none" onchange="this.form.submit()">
+          <label for="profile_picture" class="btn btn-dashboard text-white w-100" style="cursor: pointer;">
+            Upload Photo
+          </label>
+        </form>
+      </div>
+
+      <!-- Email Form -->
+      <div class="profile-card">
+        <h5 class="fw-bold mb-3" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">Account Info</h5>
+        <form action="/profile/update" method="POST">
+          <div class="mb-3">
+            <label class="profile-label">Username</label>
+            <input type="text" class="profile-input form-control" value="{{user}}" disabled />
+          </div>
+          <div class="mb-3">
+            <label class="profile-label">Email</label>
+            <input type="email" name="email" class="profile-input form-control" placeholder="Enter your email" value="{{#if profile.email}}{{profile.email}}{{/if}}" />
+          </div>
+          <button type="submit" class="btn btn-dashboard text-white w-100">Save Changes</button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Favorited Apps -->
+    <div class="col-md-8">
+      <div class="profile-card">
+        <h5 class="fw-bold mb-4" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">My Favorited Apps</h5>
+
+        {{#if favorites.length}}
+          <div class="row g-3 row-cols-1 row-cols-md-2">
+            {{#each favorites}}
+              <div class="col">
+                <div class="card h-100 custom-card-hover app-card">
+                  <img src="{{this.image}}" class="card-img-top" alt="{{this.app_name}}" style="height: 140px; object-fit: cover;">
+                  <div class="card-body text-center d-flex flex-column">
+                    <h6 class="fw-bold mb-1">{{this.app_name}}</h6>
+                    <a href="{{this.route}}" class="btn btn-dashboard text-white mt-auto btn-sm">Open</a>
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="empty-state mx-auto text-center">
+            <div class="empty-icon mb-3">⭐</div>
+            <h6 class="fw-bold mb-2" style="color: #2d2d3a;">No favorites yet!</h6>
+            <p class="text-muted mb-3">Head to the Search page to add some apps.</p>
+            <a href="/search" class="btn btn-dashboard text-white px-4">Go to Search</a>
+          </div>
+        {{/if}}
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .dashboard-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .title-divider {
+    height: 3px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #3CC86A, #1EAACC, #B87FD4);
+    width: 180px;
+    margin: 10px auto 0;
+    opacity: 0.7;
+  }
+
+  .profile-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 8px 40px rgba(30,170,204,0.10), 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e3e6f0;
+    box-shadow: 0 4px 14px rgba(30,170,204,0.15);
+  }
+
+  .profile-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #7a7a9a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 7px;
+  }
+
+  .profile-input {
+    border: 2px solid #e3e6f0 !important;
+    border-radius: 10px !important;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: #2d2d3a;
+    background: #fafbff;
+  }
+  .profile-input:focus {
+    border-color: #1EAACC !important;
+    box-shadow: 0 0 0 3px rgba(30,170,204,0.14) !important;
+  }
+  .profile-input:disabled {
+    background: #f0f2f8;
+    color: #7a7a9a;
+  }
+
+  .btn-dashboard {
+    background: linear-gradient(135deg, #1EAACC 0%, #B87FD4 100%);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(30,170,204,0.22);
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-dashboard:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .custom-card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none !important;
+    border-radius: 16px !important;
+  }
+  .custom-card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(30,170,204,0.15) !important;
+  }
+
+  .app-card {
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .empty-state {
+    max-width: 380px;
+    padding: 32px;
+  }
+  .empty-icon {
+    font-size: 2.5rem;
+  }
+</style>

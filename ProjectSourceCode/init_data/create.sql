@@ -41,3 +41,17 @@ CREATE TABLE IF NOT EXISTS user_favorites(
     app_name VARCHAR(50) NOT NULL,
     PRIMARY KEY (username, app_name)
 );
+
+CREATE TABLE IF NOT EXISTS messages(
+    id SERIAL PRIMARY KEY,
+    sender VARCHAR(50) NOT NULL REFERENCES users(username),
+    receiver VARCHAR(50) NOT NULL REFERENCES users(username),
+    message TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS user_profile (
+    username VARCHAR(50) PRIMARY KEY REFERENCES users(username),
+    email VARCHAR(100),
+    profile_picture VARCHAR(255) DEFAULT '/images/default-avatar.png'
+);

@@ -12,6 +12,16 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'resources/images/uploads/'));
+    },
+    filename: (req, file, cb) => {
+    cb(null, req.session.user.username + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage });
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -23,10 +33,11 @@ const hbs = handlebars.create({
     layoutsDir: __dirname + '/views/layouts',
     partialsDir: __dirname + '/views/partials',
     helpers: {
+        eq: (a,b) => a === b,
         JSON: function(obj) {
             return JSON.stringify(obj);
-        }
-    }
+        },
+    },
 });
 
 // database configuration
@@ -96,7 +107,7 @@ const MINI_APPS = [
         name: 'Trading Tracker', 
         route: '/Trading', 
         image: '/Images/TradingImage.jpg', 
-        description: 'Track your stock market trades and investments.' 
+        description: 'Track all of your stock market trades and investments here.' 
     },
     { 
         name: 'Recipe of the Day', 
@@ -171,6 +182,22 @@ const auth = (req, res, next) => {
     next();
 };
 
+// Make profile available on all pages
+app.use(async (req, res, next) => {
+    if (req.session.user) {
+        try {
+            const userProfile = await db.oneOrNone(
+                'SELECT * FROM user_profile WHERE username = $1',
+                [req.session.user.username]
+            );
+            res.locals.userProfile = userProfile;
+        } catch (err) {
+            res.locals.userProfile = null;
+        }
+    }
+    next();
+});
+
 // Authentication Required
 
 app.get('/discover', auth, async (req, res) => {
@@ -244,7 +271,7 @@ app.get('/SnowReport', auth, async (req, res) => {
 
 app.get('/Trading', auth, async (req, res) => {
     const ticker = req.query.ticker; // Gets ticker from search form (?ticker=AAPL)
-
+    
     // If no ticker searched, just show the search form
     if (!ticker) {
         return res.render('pages/Trading', { stock: null, news: null, ticker: null });
@@ -332,7 +359,7 @@ app.get('/search', auth, async (req, res) => {
 app.post('/favorite/toggle', auth, async (req, res) => {
     const username = req.session.user.username;
     const appName = req.body.app_name;
-    const isFavorited = req.body.is_favorited === 'true';
+    const isFavorited = req.body.is_favorited; 
 
     try {
         if (isFavorited) {
@@ -340,11 +367,59 @@ app.post('/favorite/toggle', auth, async (req, res) => {
         } else {
             await db.none(`INSERT INTO user_favorites (username, app_name) VALUES ($1, $2)`, [username, appName]);
         }
-        
-        res.redirect('/search');
+
+        res.json({success: true, newState: !isFavorited});
     } catch (err) {
         console.log(err);
-        res.redirect('/search');
+        res.status(500).json({success: false, message: 'Favorite error', error: true});
+    }
+});
+
+// ---- Chat Routes ----
+
+app.get('/chat', auth, async (req, res) => {
+    const selectedFriend = req.query.friend || null;
+    try {
+        const friends = await db.any(
+            `SELECT friend_id FROM friends WHERE user_id = $1 ORDER BY friend_id ASC`,
+            [req.session.user.username]
+        );
+
+        let messages = [];
+        if (selectedFriend) {
+            messages = await db.any(
+                `SELECT * FROM messages 
+                 WHERE (sender = $1 AND receiver = $2) OR (sender = $2 AND receiver = $1) 
+                 ORDER BY sent_at ASC`,
+                [req.session.user.username, selectedFriend]
+            );
+        }
+
+        res.render('pages/chat', { friends, messages, selectedFriend, currentUser: req.session.user.username });
+    } catch (err) {
+        console.log(err);
+        res.render('pages/chat', { friends: [], messages: [], message: 'Error loading chat.', error: true });
+    }
+});
+
+app.post('/chat/send', auth, async (req, res) => {
+    const sender = req.session.user.username;
+    const receiver = req.body.receiver;
+    const msg = req.body.message;
+
+    if (!receiver || !msg) {
+        return res.redirect('/chat');
+    }
+
+    try {
+        await db.none(
+            `INSERT INTO messages (sender, receiver, message) VALUES ($1, $2, $3)`,
+            [sender, receiver, msg]
+        );
+        res.redirect('/chat?friend=' + encodeURIComponent(receiver));
+    } catch (err) {
+        console.log(err);
+        res.redirect('/chat?friend=' + encodeURIComponent(receiver));
     }
 });
 
@@ -580,6 +655,70 @@ app.post('/Recipe/removeFavorite', auth, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false });
+    }
+});
+
+// GET /profile
+app.get('/profile', async (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    try {
+        const profile = await db.oneOrNone(
+            'SELECT * FROM user_profile WHERE username = $1',
+            [req.session.user.username]
+        );
+        const favorites = await db.any(
+            'SELECT * FROM user_favorites WHERE username = $1',
+            [req.session.user.username]
+        );
+
+        const favoritesWithDetails = favorites.map(fav => {
+            const app = MINI_APPS.find(a => a.name === fav.app_name);
+            return { ...fav, image: app?.image, route: app?.route };
+        });
+
+        res.render('pages/profile', {
+            user: req.session.user.username,
+            profile,
+            favorites: favoritesWithDetails
+        });
+    } catch (error) {
+        console.log('ERROR:', error.message || error);
+    }
+});
+
+// POST /profile/update
+app.post('/profile/update', async (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    const { email } = req.body;
+    try {
+        await db.none(
+            `INSERT INTO user_profile (username, email)
+             VALUES ($1, $2)
+             ON CONFLICT (username)
+             DO UPDATE SET email = $2`,
+            [req.session.user.username, email]
+        );
+        res.redirect('/profile');
+    } catch (error) {
+        console.log('ERROR:', error.message || error);
+    }
+});
+
+// POST /profile/upload
+app.post('/profile/upload', upload.single('profile_picture'), async (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    try {
+        const imagePath = '/images/uploads/' + req.file.filename;
+        await db.none(
+            `INSERT INTO user_profile (username, profile_picture)
+             VALUES ($1, $2)
+             ON CONFLICT (username)
+             DO UPDATE SET profile_picture = $2`,
+            [req.session.user.username, imagePath]
+        );
+        res.redirect('/profile');
+    } catch (error) {
+        console.log('ERROR:', error.message || error);
     }
 });
 

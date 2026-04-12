@@ -50,10 +50,25 @@ ul {
       font-family: 'Nunito', sans-serif;
       background: var(--bg);
       min-height: 100vh;
+      /* display: flex;
+      align-items: center;
+      justify-content: center; */
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto !important;
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      min-height: auto !important;
+    }
+    .center-page{
       display: flex;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
       padding: 24px;
+      width: 100%;
     }
 
     .card {
@@ -64,7 +79,7 @@ ul {
       box-shadow: 0 8px 40px rgba(30,170,204,0.10), 0 2px 8px rgba(0,0,0,0.06);
       padding: 44px 40px 36px;
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       animation: fadeUp 0.5s ease both;
     }
 

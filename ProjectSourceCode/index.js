@@ -33,7 +33,10 @@ const hbs = handlebars.create({
     layoutsDir: __dirname + '/views/layouts',
     partialsDir: __dirname + '/views/partials',
     helpers: {
-        eq: (a, b) => a === b,
+        eq: (a,b) => a === b,
+        JSON: function(obj) {
+            return JSON.stringify(obj);
+        },
     },
 });
 
@@ -85,6 +88,8 @@ app.use(
 );
 
 app.use(express.static(path.join(__dirname, 'resources'))); // Access resources folder at the root url, e.g. to access resources/css/default.css, use /css/home.css
+
+
 
 // *****************************************************
 // <!-- Section 4 : API Routes -->
@@ -517,7 +522,19 @@ const current_date = current_date_query[0].recipe_date;
     await db.query(
         'UPDATE recipeOfTheDay SET recipe_of_the_day = $1 WHERE id = 1', [randomRecipe]
     );
-    res.render('pages/Recipe', { randomRecipe: randomRecipe });
+
+     // Get favorite recipes
+            const username = req.session.user.username;
+            const favoriteRecipes = await db.any(`
+                SELECT favorite_recipes.recipe_id, favorite_recipes.recipe_name, favorite_recipes.cuisine
+                FROM favorite_recipes
+                JOIN users_to_favorite_recipes ON favorite_recipes.recipe_id = users_to_favorite_recipes.recipe_id
+                WHERE users_to_favorite_recipes.username = $1;`
+                , [username]
+            );
+            console.log(JSON.stringify(favoriteRecipes, null, 2));
+
+    res.render('pages/Recipe', { randomRecipe: randomRecipe, favoriteRecipes: favoriteRecipes ?? [] });
   })
   .catch(error => {
     res.render('pages/Recipe', { message: "Error"});
@@ -526,7 +543,19 @@ const current_date = current_date_query[0].recipe_date;
  else {
     const result = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
     const randomRecipe = result[0].recipe_of_the_day;
-    res.render('pages/Recipe', { randomRecipe: randomRecipe });
+
+     // Get favorite recipes
+            const username = req.session.user.username;
+            const favoriteRecipes = await db.any(`
+                SELECT favorite_recipes.recipe_id, favorite_recipes.recipe_name, favorite_recipes.cuisine
+                FROM favorite_recipes
+                JOIN users_to_favorite_recipes ON favorite_recipes.recipe_id = users_to_favorite_recipes.recipe_id
+                WHERE users_to_favorite_recipes.username = $1;`
+                , [username]
+            );
+            console.log(JSON.stringify(favoriteRecipes, null, 2));
+
+    res.render('pages/Recipe', { randomRecipe: randomRecipe, favoriteRecipes: favoriteRecipes ?? []});
 }
 }
 catch(err){
@@ -548,14 +577,85 @@ app.get('/Recipe/searchByCuisine', auth, async (req, res) => {
         })
         .then(async results => {
             console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+
+            // Get Filtered Recipes
             const searchedRecipes = results.data;
+
+            // Get Recipe of the Day
             const getRecipeOfTheDay = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
             const randomRecipe = getRecipeOfTheDay[0].recipe_of_the_day;
-            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes, selectedCuisine: req.query.cuisine});
+
+            // Get favorite recipes
+            const username = req.session.user.username;
+            const favoriteRecipes = await db.any(`
+                SELECT favorite_recipes.recipe_id, favorite_recipes.recipe_name, favorite_recipes.cuisine
+                FROM favorite_recipes
+                JOIN users_to_favorite_recipes ON favorite_recipes.recipe_id = users_to_favorite_recipes.recipe_id
+                WHERE users_to_favorite_recipes.username = $1;`
+                , [username]
+            );
+            console.log(JSON.stringify(favoriteRecipes, null, 2));
+
+            // return
+            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes, selectedCuisine: req.query.cuisine, favoriteRecipes: favoriteRecipes ?? []});
         })
         .catch(error => {
             res.render('pages/Recipe', { message: "Error"});
         });
+});
+
+app.post('/Recipe/addFavorite', auth, async (req, res) => {
+    try {
+        const username = req.session.user.username;
+        const { recipe_id, recipe_name, cuisine } = req.body;
+
+        // Insert into favorite_recipes if it doesn't exist yet
+        await db.none(`
+            INSERT INTO favorite_recipes (recipe_id, recipe_name, cuisine)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (recipe_id) DO NOTHING
+        `, [recipe_id, recipe_name, cuisine]);
+
+        // Link the user to the recipe
+        await db.none(`
+            INSERT INTO users_to_favorite_recipes (username, recipe_id)
+            VALUES ($1, $2)
+            ON CONFLICT DO NOTHING
+        `, [username, recipe_id]);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.post('/Recipe/removeFavorite', auth, async (req, res) => {
+    try {
+        const username = req.session.user.username;
+        const { recipe_id } = req.body;
+
+        // Remove the link between user and recipe
+        await db.none(`
+            DELETE FROM users_to_favorite_recipes
+            WHERE username = $1 AND recipe_id = $2
+        `, [username, recipe_id]);
+
+        // Clean up favorite_recipes if no other users have it favorited
+        await db.none(`
+            DELETE FROM favorite_recipes
+            WHERE recipe_id = $1
+            AND NOT EXISTS (
+                SELECT 1 FROM users_to_favorite_recipes
+                WHERE recipe_id = $1
+            )
+        `, [recipe_id]);
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
 });
 
 // GET /profile

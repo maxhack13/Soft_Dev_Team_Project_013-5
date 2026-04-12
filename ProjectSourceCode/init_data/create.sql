@@ -23,6 +23,19 @@ CREATE TABLE IF NOT EXISTS recipeOfTheDay (
 INSERT INTO recipeOfTheDay (id, recipe_date, recipe_of_the_day) 
 VALUES (1, 'lol', '{"lol": "lmao"}');
 
+CREATE TABLE IF NOT EXISTS favorite_recipes(
+    recipe_id VARCHAR(50) PRIMARY KEY,
+    recipe_name VARCHAR(100) NOT NULL,
+    cuisine VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users_to_favorite_recipes(
+    username VARCHAR(50) NOT NULL REFERENCES users(username),
+    recipe_id VARCHAR(50) NOT NULL REFERENCES favorite_recipes(recipe_id),
+    PRIMARY KEY (username, recipe_id)  -- Prevents duplicate favorites per user
+);
+
+/* Dashboard */
 CREATE TABLE IF NOT EXISTS user_favorites(
     username VARCHAR(50) NOT NULL REFERENCES users(username),
     app_name VARCHAR(50) NOT NULL,

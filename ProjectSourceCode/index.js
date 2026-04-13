@@ -673,16 +673,17 @@ app.post('/Recipe/removeFavorite', auth, async (req, res) => {
 });
 
 // GET /profile
-app.get('/profile', async (req, res) => {
+app.get('/profile/:username?', async (req, res) => {
+    const user = req.params.username || req.session.user.username;
     if (!req.session.user) return res.redirect('/login');
     try {
         const profile = await db.oneOrNone(
             'SELECT * FROM user_profile WHERE username = $1',
-            [req.session.user.username]
+            [user]
         );
         const favorites = await db.any(
             'SELECT * FROM user_favorites WHERE username = $1',
-            [req.session.user.username]
+            [user]
         );
 
         const favoritesWithDetails = favorites.map(fav => {
@@ -691,9 +692,10 @@ app.get('/profile', async (req, res) => {
         });
 
         res.render('pages/profile', {
-            user: req.session.user.username,
+            user: user,
             profile,
-            favorites: favoritesWithDetails
+            favorites: favoritesWithDetails,
+            isOwnProfile: (user === req.session.user.username)
         });
     } catch (error) {
         console.log('ERROR:', error.message || error);

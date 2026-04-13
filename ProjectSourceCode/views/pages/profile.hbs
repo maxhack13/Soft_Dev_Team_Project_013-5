@@ -5,7 +5,11 @@
   <!-- Header -->
   <div class="text-center mb-5">
     <h1 class="dashboard-title">
-      <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Profile</span>
+      {{#if isOwnProfile}}
+        <span style="color: #3CC86A;">My</span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Profile</span>
+      {{else}}
+        <span style="color: #3CC86A;">{{user}}'s </span><span style="color: #1EAACC;">Mini</span><span style="color: #B87FD4;">Profile</span>
+      {{/if}}
     </h1>
     <div class="title-divider"></div>
   </div>
@@ -23,15 +27,18 @@
         class="profile-avatar mb-3"
         />
         <h5 class="fw-bold" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">{{user}}</h5>
+        
+        {{#if isOwnProfile}}
         <form action="/profile/upload" method="POST" enctype="multipart/form-data" class="mt-3">
           <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="d-none" onchange="this.form.submit()">
           <label for="profile_picture" class="btn btn-dashboard text-white w-100" style="cursor: pointer;">
             Upload Photo
           </label>
         </form>
+        {{/if}}
       </div>
 
-      <!-- Email Form -->
+      {{#if isOwnProfile}}
       <div class="profile-card">
         <h5 class="fw-bold mb-3" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">Account Info</h5>
         <form action="/profile/update" method="POST">
@@ -46,13 +53,14 @@
           <button type="submit" class="btn btn-dashboard text-white w-100">Save Changes</button>
         </form>
       </div>
+      {{/if}}
 
     </div>
 
     <!-- Right Column: Favorited Apps -->
     <div class="col-md-8">
       <div class="profile-card">
-        <h5 class="fw-bold mb-4" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">My Favorited Apps</h5>
+        <h5 class="fw-bold mb-4" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">Favorited Apps</h5>
 
         {{#if favorites.length}}
           <div class="row g-3 row-cols-1 row-cols-md-2">
@@ -72,8 +80,14 @@
           <div class="empty-state mx-auto text-center">
             <div class="empty-icon mb-3">⭐</div>
             <h6 class="fw-bold mb-2" style="color: #2d2d3a;">No favorites yet!</h6>
-            <p class="text-muted mb-3">Head to the Search page to add some apps.</p>
-            <a href="/search" class="btn btn-dashboard text-white px-4">Go to Search</a>
+            
+            {{#if isOwnProfile}}
+              <p class="text-muted mb-3">Head to the Search page to add some apps.</p>
+              <a href="/search" class="btn btn-dashboard text-white px-4">Go to Search</a>
+            {{else}}
+              <p class="text-muted mb-3">{{user}} hasn't favorited any apps yet.</p>
+            {{/if}}
+            
           </div>
         {{/if}}
 

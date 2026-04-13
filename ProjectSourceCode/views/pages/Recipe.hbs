@@ -8,18 +8,58 @@
 -->
 <style>
     body{
-        padding-top: 140px;
+        padding-top: 100px;
+        background-image: url(/images/recipeBackground.jpg);
+        background-size: cover;        /* stretches image to cover the whole page */
+        background-position: center;   /* centers the image */
+        background-repeat: no-repeat;  /* prevents tiling */
+        background-attachment: fixed;  /* keeps image fixed when scrolling */
     }
+    .cuisine{
+        background-color: #3CC86A !important;
+    }
+    .recipeHeader{
+      color: #ffffff;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+    }
+    input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #3CC86A;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #3CC86A;
+    border-color: #3CC86A;
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+}
+
+h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 </style>
 
 {{> message}}
-<h1 class="mb-4">Recipes</h1>
+<h1 class=" recipeHeader mb-4 text-center w-100" style="font-size: 50px; color: white">🥗 Recipes</h1>
 <div class="container-fluid py-5 px-5" id="recipesBody" style="height: 800px">
 <div class="row">
-<div class="col-md-6">
-    <h2>Recipe of the Day</h2>
+    <h2 class="recipeHeader">Recipe of the Day</h2>
   {{#if randomRecipe}}
-  <div class="card shadow-sm mb-5" id="recipeOfTheDay" style="max-height: 500px; max-width: 600px">
+  <div class="card shadow-sm mb-5" id="recipeOfTheDay" style="max-height: 500px; width: 100%; max-width: none !important;">
     <div class="card-body">
 
       <!-- Row 1: Image and Title -->
@@ -32,7 +72,7 @@
         </div>
         <div class="col-md-9">
           <h3>{{randomRecipe.meals.[0].strMeal}}</h3>
-          <span class="badge bg-secondary">{{randomRecipe.meals.[0].strArea}}</span>
+          <span class="cuisine badge bg-secondary">{{randomRecipe.meals.[0].strArea}}</span>
         </div>
       </div>
 
@@ -60,8 +100,9 @@
   </div>
   {{/if}}
 </div>
-<div class="col-md-6" style="display:flex; flex-direction:column; gap:5px; max-width: 600px; min-height:0; overflow-y: auto">  
-  <h2>Search by Cuisine: </h2>
+<div class="row">
+<div class="col-md-12" style="display:flex; flex-direction:column; gap:5px; min-height:0; overflow-y: auto">  
+  <h2 class="recipeHeader">Search by Cuisine</h2>
   <form action="/Recipe/searchByCuisine">
   <select name="cuisine" style="max-height: 25px" id="searchByCuisine" onchange="this.form.submit()">
     <option>Algerian</option>
@@ -111,9 +152,9 @@
   {{#if
     filteredRecipes}}
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<div class="overflow-auto" style="height: 433px; overflow-y: scroll; min-height: 0;">
+<div class="overflow-auto" style="height: 500px; overflow-y: scroll; min-height: 0;">
   {{#each filteredRecipes.meals}}
-    <div class="card shadow-sm" style="max-width: 600px; height: 500px">
+    <div class="card shadow-sm" style="height: 500px; width: 100%; max-width: none !important;">
       <div class="card-body">
         <!-- Row 1: Image and Title -->
         <div class="row mb-4 align-items-center">
@@ -224,24 +265,30 @@
                   }
                 }
 
-                ingredients.innerHTML = `
-                  <div class="col-md-4" style="width: 150px">
-                    <h5>Ingredients</h5>
-                    <div style="max-height: 200px; overflow-y: auto;">
-                      ${ingredientsList}
-                    </div>
-                  </div>
-                `;
+                row.style.display = 'flex';
+                row.style.gap = '10px';
+                row.style.width = '100%';
 
-                const instructions = document.createElement('div');
-                instructions.innerHTML = `
-                  <div class="col-md-8" style="width: 280px">
-                    <h5>Instructions</h5>
-                    <div style="max-height: 200px; overflow-y: auto;">
-                      ${recipeDetails.strInstructions}
-                    </div>
+                ingredients.style.flex = '1';
+                ingredients.innerHTML = `
+                  <div style="flex: 1;">        
+                  <h5>Ingredients</h5>
+                  <div style="max-height: 200px; overflow-y: auto;">
+                    ${ingredientsList}
                   </div>
-                `;
+                  </div>
+                  `;
+
+                  const instructions = document.createElement('div');
+                  instructions.style.flex = '3';
+                    instructions.innerHTML = `
+                      <div style="flex: 1;">        
+                        <h5>Instructions</h5>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                          ${recipeDetails.strInstructions}
+                        </div>
+                      </div>
+                    `;
 
                 row.appendChild(ingredients);
                 row.appendChild(instructions);
@@ -257,19 +304,20 @@
 </div>                                 <!-- /scrollable container -->
   {{/if}}
 </div>
-
+</div>
 <!-- Favorite Rcipes -->
 
 <div class="row mt-4">
   <div class="col-12">
-    <h2>My Favorite Recipes</h2>
+    <h2 class="recipeHeader">My Favorite Recipes</h2>
     {{#if favoriteRecipes.length}}
     <div class="overflow-auto" style="height: 433px; overflow-y: scroll;">
       {{#each favoriteRecipes}}
-        <div class="card shadow-sm mb-3" style="max-width: 600px; height: 150px">
+        <div class="card shadow-sm mb-3" style="height: 100px; width: 100%; max-width: none !important;">
           <div class="card-body">
-            <h4>{{this.recipe_name}}</h4>
-            <span class="badge bg-secondary">{{this.cuisine}}</span>
+            <h4>{{this.recipe_name}}
+            <span class="cuisine badge bg-secondary">{{this.cuisine}}</span>
+            </h4>
           </div>
         </div>
       {{/each}}
@@ -280,5 +328,4 @@
   </div>
 </div>
 
-</div>
 </div>

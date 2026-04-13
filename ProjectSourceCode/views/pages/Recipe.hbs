@@ -84,22 +84,47 @@ h4 {
       </div>
 
       <!-- Row 2: Ingredients and Instructions -->
-      <div class="row">
-        <div class="col-md-4">
-          <h5>Ingredients</h5>
-          <div class="overflow-auto" style="max-height: 200px;">
-            {{> ingredients}}
-          </div>
-        </div>
-        <div class="col-md-8">
-          <h5>Instructions</h5>
-          <div class="overflow-auto" style="max-height: 200px;">
-            {{randomRecipe.meals.[0].strInstructions}}
-          </div>
-        </div>
-      </div>
-
+<div class="row">
+  <div class="col-md-4">
+    <h5>Ingredients</h5>
+    <div class="overflow-auto" style="max-height: 200px;">
+      {{> ingredients}}
     </div>
+  </div>
+  <div class="col-md-6">
+    <h5>Instructions</h5>
+    <div class="overflow-auto" id="instructionsText" style="max-height: 200px;">
+      {{randomRecipe.meals.[0].strInstructions}}
+    </div>
+  </div>
+  <div class="col-2" style="display:flex; align-items:center;">
+    <button id="copyRecipeOfDay" onclick="copyRecipeOfDay()" style="margin-top: 10px; padding: 6px 12px; cursor: pointer; border: none; border-radius: 4px; background: #3CC86A; color: white; font-size: 14px; height: 30px">📋 Copy Recipe</button>
+  </div>
+</div>
+
+<script>
+  function copyRecipeOfDay() {
+    const btn = document.getElementById('copyRecipeOfDay');
+    const mealName = '{{randomRecipe.meals.[0].strMeal}}';
+
+    const ingredientsText = document.querySelector('#recipeOfTheDay .col-md-4 .overflow-auto').innerText
+      .replace(/\n/g, ', ');
+    const instructionsText = document.getElementById('instructionsText').innerText
+      .replace(/\n/g, ' ');
+
+    const clipboardContent = `🍽️ ${mealName} | INGREDIENTS: ${ingredientsText} | INSTRUCTIONS: ${instructionsText}`;
+
+    navigator.clipboard.writeText(clipboardContent)
+      .then(() => {
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => btn.textContent = '📋 Copy Recipe', 2000);
+      })
+      .catch(() => {
+        btn.textContent = '❌ Failed';
+        setTimeout(() => btn.textContent = '📋 Copy Recipe', 2000);
+      });
+  }
+</script>
   </div>
   {{else}}
   <div class="alert alert-warning" role="alert">
@@ -245,7 +270,7 @@ h4 {
           </div>
         </div>
         <!-- Row 2: Ingredients and Instructions -->
-        <div class="row" id="meal-{{this.idMeal}}" data-meal-id="{{this.idMeal}}">
+        <div class="row" id="meal-{{this.idMeal}}" data-meal-id="{{this.idMeal}}" data-meal-name="{{this.strMeal}}">
           <script>
             (function() {
               const script = document.currentScript;
@@ -299,6 +324,35 @@ h4 {
 
                 row.appendChild(ingredients);
                 row.appendChild(instructions);
+
+                // Add this after row.appendChild(instructions); and before container.appendChild(row);
+
+                // Add this after row.appendChild(instructions); and before container.appendChild(row);
+
+const copyBtn = document.createElement('button');
+copyBtn.textContent = '📋 Copy Recipe';
+copyBtn.style.cssText = 'margin-top: 10px; padding: 6px 12px; cursor: pointer; border: none; border-radius: 4px; background: #3CC86A; color: white; font-size: 14px; height: 30px';
+
+copyBtn.addEventListener('click', function () {
+  const mealName = container.closest('[data-meal-name]')?.getAttribute('data-meal-name') || 'Recipe';
+  const ingredientsText = ingredients.innerText;
+  const instructionsText = instructions.innerText;
+
+  const clipboardContent = `🍽️ ${mealName} || ${ingredientsText} || ${instructionsText}`;
+
+  navigator.clipboard.writeText(clipboardContent)
+    .then(() => {
+      copyBtn.textContent = '✅ Copied!';
+      setTimeout(() => copyBtn.textContent = '📋 Copy Recipe', 2000);
+    })
+    .catch(() => {
+      copyBtn.textContent = '❌ Failed';
+      setTimeout(() => copyBtn.textContent = '📋 Copy Recipe', 2000);
+    });
+});
+
+row.appendChild(copyBtn);
+
                 container.appendChild(row);
               })
               .catch(error => console.error(error));

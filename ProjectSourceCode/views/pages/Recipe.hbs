@@ -51,11 +51,18 @@ h4 {
     align-items: center;
     gap: 8px;
 }
+
+.btn {
+  background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%) !important;
+}
 </style>
 
 {{> message}}
-<h1 class=" recipeHeader mb-4 text-center w-100" style="font-size: 50px; color: white">🥗 Recipes</h1>
+<h1 class=" recipeHeader mb-4 text-center w-100" style="font-size: 50px; color: white">🥗 Recipe Finder</h1>
 <div class="container-fluid py-5 px-5" id="recipesBody" style="height: 800px">
+<div class="text-center mt-3">
+    <a href="/discover" class="btn btn-secondary">← Back to Discover</a>
+  </div>
 <div class="row">
     <h2 class="recipeHeader">Recipe of the Day</h2>
   {{#if randomRecipe}}
@@ -313,7 +320,7 @@ h4 {
     {{#if favoriteRecipes.length}}
     <div class="overflow-auto" style="height: 433px; overflow-y: scroll;">
       {{#each favoriteRecipes}}
-        <div class="card shadow-sm mb-3" style="height: 100px; width: 100%; max-width: none !important;">
+        <div class="card shadow-sm mb-3" style="height: 100px; width: 100%; max-width: none !important; margin-right: 30px;">
           <div class="card-body">
             <h4>{{this.recipe_name}}
             <span class="cuisine badge bg-secondary">{{this.cuisine}}</span>

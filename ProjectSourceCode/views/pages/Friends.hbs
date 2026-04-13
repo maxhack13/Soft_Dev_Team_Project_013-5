@@ -29,7 +29,42 @@
                 {{#each friends}}
                 <div class="list-group-item d-flex justify-content-between align-items-center custom-card-hover">
                     <div>
-                        <h6 class="mb-0 fw-bold">{{this.friend_id}}</h6>
+                        <h6 class="mb-0 fw-bold" friend_id="{{this.friend_id}}">
+                          <!-- <img 
+                            src="{{#if profile.profile_picture}}{{profile.profile_picture}}{{else}}/Images/profile.png{{/if}}" 
+                            alt="Profile Picture" 
+                            class="profile-avatar mb-3" /> -->
+                            <script>
+                              (function() {
+                                try {
+                                  const script = document.currentScript;
+                                  const container = script.closest('[friend_id]');
+                                  const friendID = container.getAttribute('friend_id');
+                                  fetch(`/friends/getProfile?username=${friendID}`)
+                                  .then(res => res.json())
+                                  .then(profile => {
+                                    const pfp = document.createElement('img');
+                                    pfp.src = profile.profile_picture || '/Images/profile.png';
+                                    pfp.alt = 'Profile Picture';
+                                    pfp.className = 'profile-avatar mb-3';
+                                    pfp.style = 'width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #e3e6f0; margin-right: 10px';
+                                    container.prepend(pfp);
+                                })
+                                .catch(() => {
+                                  const pfp = document.createElement('img');
+                                  pfp.src = '/Images/profile.png';
+                                  pfp.alt = 'Profile Picture';
+                                  pfp.className = 'profile-avatar mb-3';
+                                  pfp.style = 'width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #e3e6f0; margin-right: 10px';
+                                  container.prepend(pfp);
+                                });
+                              } catch(err) {
+                                console.error(err);
+                              }
+                            })();
+                        </script>
+                          {{this.friend_id}}
+                         </h6>
                         <small class="text-muted">Friends since {{this.created_at}}</small>
                     </div>
                     <form action="/friends/remove" method="POST">

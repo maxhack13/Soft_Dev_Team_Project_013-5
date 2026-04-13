@@ -46,8 +46,38 @@ If you already have messages with them, it should show the last message and the 
             <ul class="friends-list" style="border:1px solid #e3e6f0; border-radius:10px; overflow:hidden;">
                 {{#each friends}}
                 <li>
-                    <a href="/chat?friend={{this.friend_id}}" class="{{#if (eq this.friend_id ../selectedFriend)}}active{{/if}}">
-                        {{this.friend_id}}
+                    
+                    <a href="/chat?friend={{this.friend_id}}" class="{{#if (eq this.friend_id ../selectedFriend)}}active{{/if}}" friend_id="{{this.friend_id}}">
+                        <script>
+                            (function() {
+                                try {
+                                    const script = document.currentScript;
+                                    const container = script.closest('[friend_id]');
+                                    const friendID = container.getAttribute('friend_id');
+                                    fetch(`/friends/getProfile?username=${friendID}`)
+                                    .then(res => res.json())
+                                    .then(profile => {
+                                        const pfp = document.createElement('img');
+                                        pfp.src = profile.profile_picture || '/Images/profile.png';
+                                        pfp.alt = 'Profile Picture';
+                                        pfp.className = 'profile-avatar mb-3';
+                                        pfp.style = 'width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #e3e6f0; margin-right: 10px';
+                                        container.prepend(pfp);
+                                    })
+                                    .catch(() => {
+                                        const pfp = document.createElement('img');
+                                        pfp.src = '/Images/profile.png';
+                                        pfp.alt = 'Profile Picture';
+                                        pfp.className = 'profile-avatar mb-3';
+                                        pfp.style = 'width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #e3e6f0; margin-right: 10px';
+                                        container.prepend(pfp);
+                                    });
+                                } catch(err) {
+                                    console.error(err);
+                                }
+                            })();
+                        </script>
+                         {{this.friend_id}}
                     </a>
                 </li>
                 {{/each}}

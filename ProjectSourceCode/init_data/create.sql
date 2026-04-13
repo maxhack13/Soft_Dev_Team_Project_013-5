@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS messages(
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
+
 CREATE TABLE IF NOT EXISTS user_profile (
     username VARCHAR(50) PRIMARY KEY REFERENCES users(username),
     email VARCHAR(100),

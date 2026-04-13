@@ -110,7 +110,7 @@ const MINI_APPS = [
         description: 'Track all of your stock market trades and investments here.' 
     },
     { 
-        name: 'Recipe of the Day', 
+        name: 'Recipe Finder', 
         route: '/Recipe', 
         image: '/Images/Recipe.png', 
         description: "Check out today's featured recipe and cook something new!" 
@@ -485,6 +485,20 @@ app.post('/friends/remove', auth, async (req, res) => {
         console.log(err);
         const friends = await db.any(`SELECT friend_id, created_at FROM friends WHERE user_id = $1 ORDER BY created_at DESC`, [currentUser]);
         res.render('pages/Friends', { friends, message: 'Error removing friend.', error: true });
+    }
+});
+
+app.get('/friends/getProfile', auth, async (req, res) => {
+    try {
+        const { username } = req.query;
+        const profile = await db.oneOrNone(`
+            SELECT username, email, profile_picture
+            FROM user_profile
+            WHERE username = $1
+        `, [username]);
+        res.json(profile || { profile_picture: '/Images/profile.png' });
+    } catch(err) {
+        res.status(500).json({ error: "Couldn't get profile" });
     }
 });
 

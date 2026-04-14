@@ -1,5 +1,23 @@
 {{> message}}
 
+<script>
+  async function deleteEvent(location, eventdate, btn) {
+    try {
+        const response = await fetch('/SnowReport/deleteScheduledEvent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location, eventdate })
+        });
+        if (response.ok) {
+            // Remove the card from the DOM without reloading
+            btn.closest('div.d-flex').remove();
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+</script>
+
 <div class="container my-5">
 
   <!-- Header -->
@@ -92,6 +110,74 @@
         {{/if}}
 
       </div>
+      <!-- Activity Card -->
+<div class="profile-card mt-4">
+  <h5 class="fw-bold mb-4" style="font-family: 'Nunito', sans-serif; color: #2d2d3a;">Activity</h5>
+  <p>Snow Events</p>
+  <div id="activity-list">
+    <p class="text-muted text-center">Loading...</p>
+  </div>
+  <br>
+  <p>Favorite Recipes: in progress</p>
+</div>
+
+<script>
+  const isOwnProfile = {{#if isOwnProfile}}true{{else}}false{{/if}};
+  const profileUser = "{{user}}";
+  async function loadScheduledEvents() {
+    try {
+      const response = await fetch(`/SnowReport/getScheduledEvents/${profileUser}`);
+      const events = await response.json();
+      const container = document.getElementById('activity-list');
+
+      if (!events || events.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-muted py-3">
+            <div style="font-size: 2rem;">⛷️</div>
+            <p class="mt-2">No scheduled events yet!</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = events.map(event => `
+        <div class="d-flex align-items-center justify-content-between p-3 mb-2" 
+             style="background:#fafbff; border-radius:12px; border: 1px solid #e3e6f0;">
+          <div>
+            <div class="fw-bold" style="color:#2d2d3a;">📍 ${event.location}</div>
+            <div class="text-muted" style="font-size:0.85rem;">📅 ${event.eventdate}</div>
+          </div>
+          ${isOwnProfile ? `
+            <button 
+                onclick="deleteEvent('${event.location}', '${event.eventdate}', this)"
+                style="background:none; border:none; font-size:1.2rem; cursor:pointer;">
+                🗑️
+            </button>` : ''}
+        </div>
+      `).join('');
+
+    } catch (err) {
+      document.getElementById('activity-list').innerHTML =
+        `<p class="text-danger text-center">Could not load events.</p>`;
+    }
+  }
+
+  async function deleteEvent(location, eventdate, btn) {
+    try {
+      const response = await fetch('/SnowReport/deleteScheduledEvent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location, eventdate })
+      });
+      if (response.ok) {
+        btn.closest('div.d-flex').remove();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  loadScheduledEvents();
+</script>
     </div>
 
   </div>

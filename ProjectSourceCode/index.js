@@ -269,6 +269,48 @@ app.get('/SnowReport', auth, async (req, res) => {
     }
 });
 
+app.post('/SnowReport/addToSchedule', auth, async (req, res) => {
+    try{
+        const username = req.session.user.username;
+        const { date, resort } = req.body;
+        console.log(date);
+        console.log(resort);
+        await db.none(`INSERT INTO snowReportEvents (username, location, eventDate) VALUES ($1, $2, $3)`, [username, resort, date]);
+    } catch (err){
+        console.error(err);
+    }
+});
+
+app.get('/SnowReport/getScheduledEvents/:username', auth, async (req, res) => {
+    try {
+        const username = req.params.username;
+        const results = await db.any(
+            `SELECT location, eventDate FROM snowReportEvents WHERE username = $1`,
+            [username]
+        );
+        res.json(results);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
+app.post('/SnowReport/deleteScheduledEvent', auth, async (req, res) => {
+    try {
+        const username = req.session.user.username;
+        const { location, eventdate } = req.body;
+        await db.none(
+            `DELETE FROM snowReportEvents WHERE username = $1 AND location = $2 AND eventDate = $3`,
+            [username, location, eventdate]
+        );
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
+
 app.get('/Trading', auth, async (req, res) => {
     const ticker = req.query.ticker; // Gets ticker from search form (?ticker=AAPL)
     
@@ -673,7 +715,7 @@ app.post('/Recipe/removeFavorite', auth, async (req, res) => {
 });
 
 // GET /profile
-app.get('/profile/:username?', async (req, res) => {
+app.get('/profile/:username?', auth, async (req, res) => {
     const user = req.params.username || req.session.user.username;
     if (!req.session.user) return res.redirect('/login');
     try {
@@ -737,6 +779,10 @@ app.post('/profile/upload', upload.single('profile_picture'), async (req, res) =
         console.log('ERROR:', error.message || error);
     }
 });
+
+app.post('/profile/removeSnowEvents', auth, async (req, res) => {
+
+})
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

@@ -12,6 +12,15 @@ CREATE TABLE IF NOT EXISTS friends(
     CHECK(user_id <> friend_id)
 );
 
+/* Snow Report Data */
+CREATE TABLE IF NOT EXISTS snowReportEvents (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL REFERENCES users(username),
+    location VARCHAR(255),
+    eventDate VARCHAR(255),
+    UNIQUE(username, location, eventDate)
+);
+
 /* Recipe App Data */
 CREATE TABLE IF NOT EXISTS recipeOfTheDay (
     id INT PRIMARY KEY DEFAULT 1,

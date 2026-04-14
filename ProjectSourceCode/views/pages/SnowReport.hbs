@@ -39,6 +39,14 @@
         color: #333; width: auto; margin-top: 0;
     }
 
+button:active {
+  background: #e5e5e5;
+  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+          box-shadow: inset 0px 0px 5px #c1c1c1;
+   outline: none;
+}
+
     /* Forecast table */
     .snow-table {
         background: rgba(255, 255, 255, 0.9);
@@ -106,6 +114,7 @@
                                 <th>Snowfall (in)</th>
                                 <th>High (°F)</th>
                                 <th>Low (°F)</th>
+                                <th>Save to Profile</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,10 +130,30 @@
                                 </td>
                                 <td>{{this.high}}°</td>
                                 <td>{{this.low}}°</td>
+                                <td  date="{{this.date}}" resort="{{@root.resort}}">
+                                    <button class="snow-page btn-secondary" onclick="addToSchedule(this)">Save</button>
+                                </td>
+                                <script>
+                                        async function  addToSchedule(btn) {
+                                            const td = btn.closest('[date]');
+                                            const date = td.getAttribute('date');
+                                            const resort = td.getAttribute('resort');
+                                            const response = await fetch("/SnowReport/addToSchedule", {
+                                                method: "POST",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({ date: date, resort: resort ?? "" })
+                                            });
+                                        }
+
+
+                                    </script>
                             </tr>
                             {{/each}}
                         </tbody>
                     </table>
+                </div>
+                <div style="text-align:center">
+                    <p>Save these events to your profile for friends to see!</p>
                 </div>
             </div>
         </div>

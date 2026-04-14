@@ -35,3 +35,11 @@ In Milestone Submission folder we pushed our release notes to summarize what fea
 -ready up feature for snow
 -definitely chat and friends email
 -add more detail to mini apps
+
+
+4/14 Meeting Notes
+- Host website on render
+- Present next week
+- Connect chat and friends features to rest of website
+- Finish the readme
+- Do testing (see project guide)

@@ -3,6 +3,7 @@ James Clayton is not in the group anymore.
 Start coding this week, using Lab assignments as starting point.
 Follow proper Git procedures as described in the Project Guide.
 
+
 3/31 Meeting Notes
 What was accomplished since last meeting:
 - Ethan updated the navbar to correctly display the Dashboard, Search, and Friends page linking them to skeleton pages for now until they are implemented
@@ -20,6 +21,7 @@ Aiden will make a functional prototype of the recipe mini app
 
 Release notes:
 In Milestone Submission folder we pushed our release notes to summarize what features we have implemented since last meeting.
+
 
 4/7 Meeting Notes
 -We showed our Web Page, Max showed the Snow Report, Recipe, and the function of our Website.

@@ -117,3 +117,23 @@ If you already have messages with them, it should show the last message and the 
         <a href="/friends" class="btn btn-primary" style="max-width:300px; margin:16px auto;">Add Friends</a>
     {{/if}}
 </div>
+
+<script>
+    // Auto-fill message from ?msg= query param (ex: from Snow Report link)
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const prefill = params.get('msg');
+        if (prefill) {
+            // Prefill the input if it exists (friend is selected)
+            const input = document.querySelector('input[name="message"]');
+            if (input) input.value = prefill;
+
+            // Append &msg= to all friend links so it persists when picking a friend
+            document.querySelectorAll('.friends-list a').forEach(link => {
+                const url = new URL(link.href, window.location.origin);
+                url.searchParams.set('msg', prefill);
+                link.href = url.toString();
+            });
+        }
+    })();
+</script>

@@ -57,6 +57,17 @@ h4 {
 }
 </style>
 
+<script>
+    function searchJSON(data, field, query) {
+    if (!data || !Array.isArray(data)) return [];
+    if (!query) return data;
+
+    return data.filter(item =>
+      item[field]?.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+</script>
+
 {{> message}}
 <h1 class=" recipeHeader mb-4 text-center w-100" style="font-size: 50px; color: white">🥗 Recipe Finder</h1>
 <div class="container-fluid py-5 px-5" id="recipesBody" style="height: 800px">
@@ -80,6 +91,63 @@ h4 {
         <div class="col-md-9">
           <h3>{{randomRecipe.meals.[0].strMeal}}</h3>
           <span class="cuisine badge bg-secondary">{{randomRecipe.meals.[0].strArea}}</span>
+          <div random-recipe-name="{{randomRecipe.meals.[0].strMeal}}" 
+     favorite-recipes-data='{{#if favoriteRecipes}}{{JSON favoriteRecipes}}{{else}}[]{{/if}}' data-cuisine="{{randomRecipe.meals.[0].strArea}}" data-meal-id="{{randomRecipe.meals.[0].idMeal}}">
+          <script>
+          (function() {
+    try{
+    const script = document.currentScript;
+    const container = script.closest('[random-recipe-name]');
+    const mealName = container.getAttribute('random-recipe-name');
+    const cuisine = container.getAttribute('data-cuisine');
+    const mealId = container.getAttribute('data-meal-id');
+
+    // parse JSON
+    const favoriteRecipes = JSON.parse(
+      container.getAttribute('favorite-recipes-data')
+    );
+
+    const recipeMatches = searchJSON(favoriteRecipes, 'recipe_name', mealName);
+
+    const wrapper = document.createElement('div');
+    if(recipeMatches.length === 0) {
+      wrapper.innerHTML = `
+        <br>
+        <h4>
+          Favorite
+          <input type="checkbox" class="favorite-checkbox"></input>
+        </h4>
+      `
+    } else{
+      wrapper.innerHTML = `
+        <h4>
+          Favorite
+          <input type="checkbox" checked class="favorite-checkbox"></input>
+        </h4>
+      `
+    }
+
+    const checkbox = wrapper.querySelector('.favorite-checkbox');
+
+    checkbox.addEventListener('change', function() {
+    const originalState = !this.checked; // save state before change
+    if (this.checked) {
+        axios.post('/Recipe/addFavorite', { recipe_id: mealId, recipe_name: mealName, cuisine: cuisine })
+            .catch(() => { checkbox.checked = originalState; }); // revert on error
+    } else {
+        axios.post('/Recipe/removeFavorite', { recipe_id: mealId })
+            .catch(() => { checkbox.checked = originalState; }); // revert on error
+    }
+});
+
+    container.appendChild(wrapper);
+    console.log("RUNNING SCRIPT", mealName, recipeMatches);
+    } catch(err){
+      console.error(err);
+    }
+  })();
+  </script>
+  </div>
         </div>
       </div>
 
@@ -199,14 +267,6 @@ h4 {
      favorite-recipes-data='{{JSON ../favoriteRecipes}}' data-cuisine="{{../selectedCuisine}}" data-meal-id="{{this.idMeal}}">
 
 <script>
-  function searchJSON(data, field, query) {
-    if (!data || !Array.isArray(data)) return [];
-    if (!query) return data;
-
-    return data.filter(item =>
-      item[field]?.toLowerCase().includes(query.toLowerCase())
-    );
-  }
 
   (function() {
     try{
@@ -384,8 +444,12 @@ row.appendChild(copyBtn);
       {{/each}}
     </div>
     {{else}}
-    <div class="alert alert-info">You have no favorited recipes yet.</div>
+    <div class="alert alert-info">Favorite recipes to add them to your profile for friends to see!</div>
     {{/if}}
+        <a href="/chat" class="btn btn-secondary">💬 Start a chat to share and discuss recipes with friends!</a>
+        <br>
+        <br>
+        <br>
   </div>
 </div>
 

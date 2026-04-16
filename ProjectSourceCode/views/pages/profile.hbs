@@ -118,8 +118,54 @@
     <p class="text-muted text-center">Loading...</p>
   </div>
   <br>
-  <p>Favorite Recipes: in progress</p>
+  <p>Favorite Recipes</p>
+  <div id="food-list">
+
+  </div>
 </div>
+
+<script>
+  const username = "{{user}}";
+
+  async function loadFavoriteRecipes(username) {
+    try {
+      // 1. Hit our backend route which handles DB + MealDB fetching
+      const response = await fetch(`/Recipe/details/${username}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      const container = document.getElementById('food-list');
+
+      // 2. Handle empty state
+      if (!data.recipes || data.recipes.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-muted py-3">
+            <div style="font-size: 2rem;">🍽️</div>
+            <p class="mt-2">No favorite recipes yet!</p>
+          </div>`;
+        return;
+      }
+
+      // 3. Render each recipe card
+      container.innerHTML = data.recipes.map(recipe => `
+        <div class="d-flex align-items-center justify-content-between p-3 mb-2"
+             style="background:#fafbff; border-radius:12px; border: 1px solid #e3e6f0;">
+          <div>
+            <div class="fw-bold" style="color:#2d2d3a;">🍴 ${recipe.name}</div>
+            <div class="text-muted" style="font-size:0.85rem;">🌍 ${recipe.cuisine}</div>
+          </div>
+        </div>
+      `).join('');
+
+    } catch (err) {
+      console.error('Failed to load favorite recipes:', err);
+      document.getElementById('food-list').innerHTML =
+        `<p class="text-danger text-center">Could not load recipes.</p>`;
+    }
+  }
+
+  loadFavoriteRecipes(username);
+</script>
 
 <script>
   const isOwnProfile = {{#if isOwnProfile}}true{{else}}false{{/if}};

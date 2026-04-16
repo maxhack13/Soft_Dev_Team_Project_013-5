@@ -320,7 +320,7 @@ app.get('/Trading', auth, async (req, res) => {
     );
 
     if (!ticker) {
-        return res.render('pages/Trading', { stock: null, news: null, ticker: null, friends });
+        return res.render('pages/Trading', { stock: null, ticker: null, friends });
     }
 
     try {
@@ -331,6 +331,9 @@ app.get('/Trading', auth, async (req, res) => {
                 apikey: process.env.API_KEY
             }
         });
+
+        // Log full API response for debugging
+        console.log('Trading API response for', ticker, ':', JSON.stringify(quoteResponse.data, null, 2));
 
         const quoteData = quoteResponse.data['Global Quote'];
         let stock = null;
@@ -345,29 +348,18 @@ app.get('/Trading', auth, async (req, res) => {
                 low: parseFloat(quoteData['04. low']).toFixed(2),
                 volume: parseInt(quoteData['06. volume']).toLocaleString(),
             };
+        } else {
+            console.warn('Trading API: No valid quote data. Possible rate limit or bad key. Raw:', quoteResponse.data);
         }
 
-        const newsResponse = await axios.get('https://www.alphavantage.co/query', {
-            params: {
-                function: 'NEWS_SENTIMENT',
-                tickers: ticker,
-                limit: 5,
-                apikey: process.env.API_KEY
-            }
-        });
-
-        const newsData = newsResponse.data.feed || [];
-        const news = newsData.slice(0, 5).map(article => ({
-            title: article.title,
-            url: article.url,
-            source: article.source,
-            summary: article.summary ? article.summary.substring(0, 150) + '...' : '',
-        }));
-
-        res.render('pages/Trading', { stock, news, ticker, friends });
+        res.render('pages/Trading', { stock, ticker, friends });
     } catch (err) {
         console.error('Trading API error:', err.message);
-        res.render('pages/Trading', { stock: null, news: null, ticker, friends, error: true });
+        if (err.response) {
+            console.error('Trading API response status:', err.response.status);
+            console.error('Trading API response data:', JSON.stringify(err.response.data, null, 2));
+        }
+        res.render('pages/Trading', { stock: null, ticker, friends, error: true });
     }
 });
 

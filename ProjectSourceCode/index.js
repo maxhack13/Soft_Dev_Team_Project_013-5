@@ -312,15 +312,18 @@ app.post('/SnowReport/deleteScheduledEvent', auth, async (req, res) => {
 
 
 app.get('/Trading', auth, async (req, res) => {
-    const ticker = req.query.ticker; // Gets ticker from search form (?ticker=AAPL)
-    
-    // If no ticker searched, just show the search form
+    const ticker = req.query.ticker;
+
+    const friends = await db.any(
+        `SELECT friend_id AS friend_id FROM friends WHERE user_id = $1 ORDER BY friend_id ASC`,
+        [req.session.user.username]
+    );
+
     if (!ticker) {
-        return res.render('pages/Trading', { stock: null, news: null, ticker: null });
+        return res.render('pages/Trading', { stock: null, news: null, ticker: null, friends });
     }
 
     try {
-        // Call Alpha Vantage for stock quote
         const quoteResponse = await axios.get('https://www.alphavantage.co/query', {
             params: {
                 function: 'GLOBAL_QUOTE',
@@ -344,7 +347,6 @@ app.get('/Trading', auth, async (req, res) => {
             };
         }
 
-        // Call Alpha Vantage for news
         const newsResponse = await axios.get('https://www.alphavantage.co/query', {
             params: {
                 function: 'NEWS_SENTIMENT',
@@ -362,10 +364,10 @@ app.get('/Trading', auth, async (req, res) => {
             summary: article.summary ? article.summary.substring(0, 150) + '...' : '',
         }));
 
-        res.render('pages/Trading', { stock, news, ticker });
+        res.render('pages/Trading', { stock, news, ticker, friends });
     } catch (err) {
         console.error('Trading API error:', err.message);
-        res.render('pages/Trading', { stock: null, news: null, ticker, error: true });
+        res.render('pages/Trading', { stock: null, news: null, ticker, friends, error: true });
     }
 });
 
@@ -427,6 +429,10 @@ app.get('/chat', auth, async (req, res) => {
             [req.session.user.username]
         );
 
+        console.log('Chat friends:', friends);
+        console.log('SESSION USER:', req.session.user.username);
+        console.log('FRIENDS FOUND:', friends); 
+
         let messages = [];
         if (selectedFriend) {
             messages = await db.any(
@@ -437,7 +443,12 @@ app.get('/chat', auth, async (req, res) => {
             );
         }
 
-        res.render('pages/chat', { friends, messages, selectedFriend, currentUser: req.session.user.username });
+        res.render('pages/chat', { 
+            friends, 
+            messages, 
+            selectedFriend, 
+            currentUser: req.session.user.username 
+        });
     } catch (err) {
         console.log(err);
         res.render('pages/chat', { friends: [], messages: [], message: 'Error loading chat.', error: true });

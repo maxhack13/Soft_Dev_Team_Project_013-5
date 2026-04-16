@@ -714,6 +714,39 @@ app.post('/Recipe/removeFavorite', auth, async (req, res) => {
     }
 });
 
+app.get('/Recipe/details/:username', auth, async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        // 1. Fetch recipe IDs from DB using pg-promise
+        const rows = await db.any(
+            `SELECT recipe_id FROM users_to_favorite_recipes WHERE username = $1`,
+            [username]
+        );
+
+        const recipeIds = rows.map(row => row.recipe_id);
+
+        if (recipeIds.length === 0) return res.json({ recipes: [] });
+
+        // 2. Fetch details from TheMealDB for each ID
+        const recipeDetails = await Promise.all(
+            recipeIds.map(async (id) => {
+                const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
+                const meal = response.data.meals?.[0];
+                return meal ? { name: meal.strMeal, cuisine: meal.strArea } : null;
+            })
+        );
+
+        // 3. Filter nulls and respond
+        const recipes = recipeDetails.filter(Boolean);
+        res.json({ recipes });
+
+    } catch (err) {
+        console.error('Error fetching recipe details:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // GET /profile
 app.get('/profile/:username?', auth, async (req, res) => {
     const user = req.params.username || req.session.user.username;
@@ -779,10 +812,6 @@ app.post('/profile/upload', upload.single('profile_picture'), async (req, res) =
         console.log('ERROR:', error.message || error);
     }
 });
-
-app.post('/profile/removeSnowEvents', auth, async (req, res) => {
-
-})
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

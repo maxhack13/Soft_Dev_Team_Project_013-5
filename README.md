@@ -68,6 +68,6 @@ http://localhost:3001/
 Tests will automatically be run when the Docker container is set up by running `docker compose up`.
 
 ### Link to Application
-[myminidashboard.onrender.com](myminidashboard.onrender.com)
+[myminidashboard.onrender.com](https://myminidashboard.onrender.com/)
 
 

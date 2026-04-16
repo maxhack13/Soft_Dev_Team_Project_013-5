@@ -57,6 +57,8 @@ h4 {
 }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
     function searchJSON(data, field, query) {
     if (!data || !Array.isArray(data)) return [];
@@ -251,7 +253,6 @@ h4 {
   {{/if}}
   {{#if
     filteredRecipes}}
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <div class="overflow-auto" style="height: 500px; overflow-y: scroll; min-height: 0;">
   {{#each filteredRecipes.meals}}
     <div class="card shadow-sm" style="height: 500px; width: 100%; max-width: none !important;">

@@ -1,17 +1,42 @@
 {{> message}}
 
-<div id="disclaimer" style="margin-top:70px; background:#332d1a; color:#e8c44a; text-align:center; padding:10px; cursor:pointer; border:1px solid #d29922;" onclick="this.style.display='none'">
+<div id="disclaimer"
+    style="margin-top:70px; background:#332d1a; color:#e8c44a; text-align:center; padding:10px; cursor:pointer; border:1px solid #d29922;"
+    onclick="this.style.display='none'">
     ⚠️ We are not responsible for any stock market losses or unfortunate financial decisions (click to dismiss)
 </div>
 
 <style>
     /* Dark trading theme */
-    body { background: #0d1117 !important; color: #e6edf3 !important; align-items: flex-start !important; justify-content: flex-start !important; min-height: auto !important; }
+    body {
+        background: #0d1117 !important;
+        color: #e6edf3 !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        min-height: auto !important;
+    }
 
-    .trading-page, .trading-page * { color: #e6edf3; }
-    .trading-page h1, .trading-page h3, .trading-page h4 { color: #ffffff !important; }
-    .trading-page p, .trading-page td, .trading-page th, .trading-page label { color: #e6edf3 !important; }
-    .trading-page input[type="text"] { color: #e6edf3 !important; }
+    .trading-page,
+    .trading-page * {
+        color: #e6edf3;
+    }
+
+    .trading-page h1,
+    .trading-page h3,
+    .trading-page h4 {
+        color: #ffffff !important;
+    }
+
+    .trading-page p,
+    .trading-page td,
+    .trading-page th,
+    .trading-page label {
+        color: #e6edf3 !important;
+    }
+
+    .trading-page input[type="text"] {
+        color: #e6edf3 !important;
+    }
 
     /* Search bar */
     .trading-page .form-control {
@@ -19,20 +44,27 @@
         border: 1px solid #30363d;
         color: #e6edf3;
     }
+
     .trading-page .form-control:focus {
         background: #161b22;
         border-color: #58a6ff;
         color: #e6edf3;
-        box-shadow: 0 0 0 3px rgba(88,166,255,0.2);
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
     }
+
     .trading-page .btn-primary {
         background: linear-gradient(135deg, #238636, #1f6feb) !important;
-        border: none; width: auto; margin-top: 0;
+        border: none;
+        width: auto;
+        margin-top: 0;
     }
+
     .trading-page .btn-secondary {
         background: #21262d !important;
         border: 1px solid #30363d;
-        color: #e6edf3; width: auto; margin-top: 0;
+        color: #e6edf3;
+        width: auto;
+        margin-top: 0;
     }
 
     /* Stock card */
@@ -42,34 +74,77 @@
         border-radius: 12px;
         overflow: hidden;
     }
+
     .stock-card .card-header {
         background: #0d1117 !important;
         border-bottom: 2px solid #238636;
         padding: 20px 20px;
     }
-    .stock-card .card-header h3 { color: #58a6ff !important; margin: 0; font-size: 1.5rem; }
-    .stock-card .card-body { padding: 25px; }
-    .stock-card table td { color: #040404 !important; border: none; padding: 8px 12px; font-size: 1.03em; }
-    .stock-card table td strong { color: #a0aabb !important; }
+
+    .stock-card .card-header h3 {
+        color: #58a6ff !important;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .stock-card .card-body {
+        padding: 25px;
+    }
+
+    .stock-card table td {
+        color: #040404 !important;
+        border: none;
+        padding: 8px 12px;
+        font-size: 1.03em;
+    }
+
+    .stock-card table td strong {
+        color: #a0aabb !important;
+    }
 
     /* Candle decoration */
     .candle-bar {
-        display: flex; align-items: flex-end; gap: 6px;
-        justify-content: center; margin: 16px 0; height: 60px;
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        justify-content: center;
+        margin: 16px 0;
+        height: 60px;
     }
+
     .candle {
-        width: 10px; border-radius: 2px; position: relative;
+        width: 10px;
+        border-radius: 2px;
+        position: relative;
     }
+
     .candle::before {
-        content: ''; position: absolute; width: 2px;
-        background: inherit; left: 4px; top: -6px; height: 6px;
+        content: '';
+        position: absolute;
+        width: 2px;
+        background: inherit;
+        left: 4px;
+        top: -6px;
+        height: 6px;
     }
+
     .candle::after {
-        content: ''; position: absolute; width: 2px;
-        background: inherit; left: 4px; bottom: -5px; height: 5px;
+        content: '';
+        position: absolute;
+        width: 2px;
+        background: inherit;
+        left: 4px;
+        bottom: -5px;
+        height: 5px;
     }
-    .candle.green { background: #3fb950; }
-    .candle.red { background: #f85149; }
+
+    .candle.green {
+        background: #3fb950;
+    }
+
+    .candle.red {
+        background: #f85149;
+    }
 
     /* Live chart */
     .chart-wrapper {
@@ -79,18 +154,36 @@
         overflow: hidden;
         margin-bottom: 20px;
     }
-    .chart-wrapper h4 { color: #e6edf3; padding: 16px 20px 0; margin: 0; }
+
+    .chart-wrapper h4 {
+        color: #e6edf3;
+        padding: 16px 20px 0;
+        margin: 0;
+    }
 
 
 
-    .alert-danger { background: #1c1015; border-color: #f85149; color: #ff8888; }
-    .alert-warning { background: #1c1a10; border-color: #d29922; color: #e8c44a; }
-    .section-label { color: #8b949e; }
+    .alert-danger {
+        background: #1c1015;
+        border-color: #f85149;
+        color: #ff8888;
+    }
+
+    .alert-warning {
+        background: #1c1a10;
+        border-color: #d29922;
+        color: #e8c44a;
+    }
+
+    .section-label {
+        color: #8b949e;
+    }
 
     /* Padding */
     .trading-page .text-center.mt-4 {
-    margin-bottom: 80px; /* pushes button up */
-}
+        margin-bottom: 80px;
+        /* pushes button up */
+    }
 </style>
 
 <div class="container my-5 trading-page">
@@ -117,7 +210,8 @@
     <div class="row justify-content-center mb-4">
         <div class="col-md-6">
             <form action="/Trading" method="GET" class="input-group">
-                <input type="text" name="ticker" list="tickers" class="form-control" placeholder="e.g. AAPL, TSLA, MSFT" value="{{ticker}}" required autocomplete="off">
+                <input type="text" name="ticker" list="tickers" class="form-control" placeholder="e.g. AAPL, TSLA, MSFT"
+                    value="{{ticker}}" required autocomplete="off">
                 <datalist id="tickers">
                     <option value="AAPL">Apple</option>
                     <option value="MSFT">Microsoft</option>
@@ -146,7 +240,7 @@
     </div>
 
     {{#if error}}
-        <div class="alert alert-danger text-center">Could not load data. Please check the ticker and try again.</div>
+    <div class="alert alert-danger text-center">Could not load data. Please check the ticker and try again.</div>
     {{/if}}
 
     {{#if stock}}
@@ -184,11 +278,11 @@
     {{/if}}
 
     {{#if ticker}}
-        {{#unless stock}}
-            {{#unless error}}
-                <div class="alert alert-warning text-center">No stock data found for "{{ticker}}". Check the ticker symbol.</div>
-            {{/unless}}
-        {{/unless}}
+    {{#unless stock}}
+    {{#unless error}}
+    <div class="alert alert-warning text-center">No stock data found for "{{ticker}}". Check the ticker symbol.</div>
+    {{/unless}}
+    {{/unless}}
     {{/if}}
 
     <!-- Live TradingView Chart -->
@@ -229,52 +323,60 @@
     {{/if}}
 
     {{#if stock}}
-<div class="row justify-content-center mb-3">
-    <div class="col-md-8 text-center">
-        <button class="btn btn-primary" onclick="document.getElementById('shareModal').style.display='flex'">
-            📤 Share with a Friend
-        </button>
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-8 text-center">
+            <button class="btn btn-primary" onclick="document.getElementById('shareModal').style.display='flex'">
+                📤 Share with a Friend
+            </button>
+        </div>
     </div>
-</div>
 
-<!-- Share Modal -->
-<div id="shareModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px; width:100%; max-width:480px; position:relative;">
-        
-        <button onclick="document.getElementById('shareModal').style.display='none'" style="position:absolute; top:12px; right:16px; background:none; border:none; color:#8b949e; font-size:1.3rem; cursor:pointer;">✕</button>
-        
-        <h5 style="color:#fff; font-family:'Nunito',sans-serif; margin-bottom:20px;">📤 Share Stock Info</h5>
+    <!-- Share Modal -->
+    <div id="shareModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <div
+            style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px; width:100%; max-width:480px; position:relative;">
 
-        <form action="/chat/send" method="POST">
-            <input type="hidden" name="receiver" id="selectedFriend" value="">
-            
-            <!-- Friend selector -->
-            <div class="mb-3">
-                <label style="color:#8b949e; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:7px;">Send To</label>
-                <select name="receiver" class="form-control" style="background:#0d1117; border:1px solid #30363d; color:#e6edf3; border-radius:10px; padding:10px;">
-                    <option value="">-- Select a friend --</option>
-                    {{#each friends}}
+            <button onclick="document.getElementById('shareModal').style.display='none'"
+                style="position:absolute; top:12px; right:16px; background:none; border:none; color:#8b949e; font-size:1.3rem; cursor:pointer;">✕</button>
+
+            <h5 style="color:#fff; font-family:'Nunito',sans-serif; margin-bottom:20px;">📤 Share Stock Info</h5>
+
+            <form action="/chat/send" method="POST">
+                <input type="hidden" name="receiver" id="selectedFriend" value="">
+
+                <!-- Friend selector -->
+                <div class="mb-3">
+                    <label
+                        style="color:#8b949e; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:7px;">Send
+                        To</label>
+                    <select name="receiver" class="form-control"
+                        style="background:#0d1117; border:1px solid #30363d; color:#e6edf3; border-radius:10px; padding:10px;">
+                        <option value="">-- Select a friend --</option>
+                        {{#each friends}}
                         <option value="{{this.friend_id}}">{{this.friend_id}}</option>
-                    {{/each}}
-                </select>
-            </div>
+                        {{/each}}
+                    </select>
+                </div>
 
-            <!-- Pre-filled message -->
-            <div class="mb-3">
-                <label style="color:#8b949e; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:7px;">Message</label>
-                <textarea name="message" rows="5" class="form-control" style="background:#0d1117; border:1px solid #30363d; color:#e6edf3; border-radius:10px; padding:12px; resize:none;">📈 {{stock.symbol}} Stock Update
+                <!-- Pre-filled message -->
+                <div class="mb-3">
+                    <label
+                        style="color:#8b949e; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:7px;">Message</label>
+                    <textarea name="message" rows="5" class="form-control"
+                        style="background:#0d1117; border:1px solid #30363d; color:#e6edf3; border-radius:10px; padding:12px; resize:none;">📈 {{stock.symbol}} Stock Update
                 Price: ${{stock.price}}
                 Change: {{stock.change}} ({{stock.changePercent}})
                 Day High: ${{stock.high}}
                 Day Low: ${{stock.low}}
                 Volume: {{stock.volume}}</textarea>
-            </div>
+                </div>
 
-            <button type="submit" class="btn btn-primary w-100" style="margin-top:0;">Send Message</button>
-        </form>
+                <button type="submit" class="btn btn-primary w-100" style="margin-top:0;">Send Message</button>
+            </form>
+        </div>
     </div>
-</div>
-{{/if}}
+    {{/if}}
 
     <div class="text-center mt-4">
         <a href="/discover" class="btn btn-secondary">← Back to Discover</a>

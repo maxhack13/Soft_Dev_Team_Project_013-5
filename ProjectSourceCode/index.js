@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname, 'resources/images/uploads/'));
     },
     filename: (req, file, cb) => {
-    cb(null, req.session.user.username + '-' + Date.now() + path.extname(file.originalname));
+        cb(null, req.session.user.username + '-' + Date.now() + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage });
@@ -33,8 +33,8 @@ const hbs = handlebars.create({
     layoutsDir: __dirname + '/views/layouts',
     partialsDir: __dirname + '/views/partials',
     helpers: {
-        eq: (a,b) => a === b,
-        JSON: function(obj) {
+        eq: (a, b) => a === b,
+        JSON: function (obj) {
             return JSON.stringify(obj);
         },
     },
@@ -97,23 +97,23 @@ app.use(express.static(path.join(__dirname, 'resources'))); // Access resources 
 
 // List of Mini Apps
 const MINI_APPS = [
-    { 
-        name: 'Snow Report', 
-        route: '/SnowReport', 
-        image: '/Images/SnowReport.png', 
-        description: 'Check the latest snow report for your favorite ski resort.' 
+    {
+        name: 'Snow Report',
+        route: '/SnowReport',
+        image: '/Images/SnowReport.png',
+        description: 'Check the latest snow report for your favorite ski resort.'
     },
-    { 
-        name: 'Trading Tracker', 
-        route: '/Trading', 
-        image: '/Images/TradingImage.jpg', 
-        description: 'Track all of your stock market trades and investments here.' 
+    {
+        name: 'Trading Tracker',
+        route: '/Trading',
+        image: '/Images/TradingImage.jpg',
+        description: 'Track all of your stock market trades and investments here.'
     },
-    { 
-        name: 'Recipe Finder', 
-        route: '/Recipe', 
-        image: '/Images/Recipe.png', 
-        description: "Check out today's featured recipe and cook something new!" 
+    {
+        name: 'Recipe Finder',
+        route: '/Recipe',
+        image: '/Images/Recipe.png',
+        description: "Check out today's featured recipe and cook something new!"
     }
 ];
 
@@ -204,14 +204,14 @@ app.get('/discover', auth, async (req, res) => {
     try {
         const favs = await db.any(`SELECT app_name FROM user_favorites WHERE username = $1`, [req.session.user.username]);
         const userApps = MINI_APPS.filter(app => favs.map(f => f.app_name).includes(app.name));
-        
-        res.render('pages/discover', {apps: userApps});
+
+        res.render('pages/discover', { apps: userApps });
     } catch (err) {
         console.log(err);
         res.render('pages/discover', {
             apps: [],
             message: 'Discover error',
-            error: true 
+            error: true
         });
     }
 });
@@ -240,18 +240,28 @@ app.get('/SnowReport', auth, async (req, res) => {
 
     try {
         const coords = skiResorts[resort];
+        const apiParams = {
+            latitude: coords.lat,
+            longitude: coords.lon,
+            daily: 'snowfall_sum,temperature_2m_max,temperature_2m_min',
+            temperature_unit: 'fahrenheit',
+            timezone: 'America/Denver',
+            forecast_days: 7
+        };
 
-        // Call Open-Meteo API
-        const response = await axios.get('https://api.open-meteo.com/v1/forecast', {
-            params: {
-                latitude: coords.lat,
-                longitude: coords.lon,
-                daily: 'snowfall_sum,temperature_2m_max,temperature_2m_min',
-                temperature_unit: 'fahrenheit',
-                timezone: 'America/Denver',
-                forecast_days: 7
+        let response;
+        try {
+            response = await axios.get('https://api.open-meteo.com/v1/forecast', { params: apiParams });
+        } catch (firstErr) {
+            // If 429 rate limit, wait and retry once
+            if (firstErr.response && firstErr.response.status === 429) {
+                console.log('Snow Report: 429 rate limit, retrying in 1.5s...');
+                await new Promise(r => setTimeout(r, 1500));
+                response = await axios.get('https://api.open-meteo.com/v1/forecast', { params: apiParams });
+            } else {
+                throw firstErr;
             }
-        });
+        }
 
         const daily = response.data.daily;
 
@@ -270,13 +280,13 @@ app.get('/SnowReport', auth, async (req, res) => {
 });
 
 app.post('/SnowReport/addToSchedule', auth, async (req, res) => {
-    try{
+    try {
         const username = req.session.user.username;
         const { date, resort } = req.body;
         console.log(date);
         console.log(resort);
         await db.none(`INSERT INTO snowReportEvents (username, location, eventDate) VALUES ($1, $2, $3)`, [username, resort, date]);
-    } catch (err){
+    } catch (err) {
         console.error(err);
     }
 });
@@ -381,7 +391,7 @@ app.get('/search', auth, async (req, res) => {
             };
         });
 
-        res.render('pages/Search', {apps: displayApps});
+        res.render('pages/Search', { apps: displayApps });
     } catch (err) {
         console.log(err);
         res.render('pages/Search', {
@@ -395,7 +405,7 @@ app.get('/search', auth, async (req, res) => {
 app.post('/favorite/toggle', auth, async (req, res) => {
     const username = req.session.user.username;
     const appName = req.body.app_name;
-    const isFavorited = req.body.is_favorited; 
+    const isFavorited = req.body.is_favorited;
 
     try {
         if (isFavorited) {
@@ -404,10 +414,10 @@ app.post('/favorite/toggle', auth, async (req, res) => {
             await db.none(`INSERT INTO user_favorites (username, app_name) VALUES ($1, $2)`, [username, appName]);
         }
 
-        res.json({success: true, newState: !isFavorited});
+        res.json({ success: true, newState: !isFavorited });
     } catch (err) {
         console.log(err);
-        res.status(500).json({success: false, message: 'Favorite error', error: true});
+        res.status(500).json({ success: false, message: 'Favorite error', error: true });
     }
 });
 
@@ -423,7 +433,7 @@ app.get('/chat', auth, async (req, res) => {
 
         console.log('Chat friends:', friends);
         console.log('SESSION USER:', req.session.user.username);
-        console.log('FRIENDS FOUND:', friends); 
+        console.log('FRIENDS FOUND:', friends);
 
         let messages = [];
         if (selectedFriend) {
@@ -435,11 +445,11 @@ app.get('/chat', auth, async (req, res) => {
             );
         }
 
-        res.render('pages/chat', { 
-            friends, 
-            messages, 
-            selectedFriend, 
-            currentUser: req.session.user.username 
+        res.render('pages/chat', {
+            friends,
+            messages,
+            selectedFriend,
+            currentUser: req.session.user.username
         });
     } catch (err) {
         console.log(err);
@@ -542,7 +552,7 @@ app.get('/friends/getProfile', auth, async (req, res) => {
             WHERE username = $1
         `, [username]);
         res.json(profile || { profile_picture: '/Images/profile.png' });
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ error: "Couldn't get profile" });
     }
 });
@@ -559,30 +569,51 @@ app.get('/logout', auth, (req, res) => {
 // ---- Recipe Routes ---- //
 
 app.get('/Recipe/recipeOfTheDay', auth, async (req, res) => {
- try{
- const date = new Date().toISOString().split('T')[0];
- const current_date_query = await db.any('SELECT recipe_date FROM recipeOfTheDay WHERE id = 1');
-const current_date = current_date_query[0].recipe_date;
- if(date != current_date){
-  await db.query(
-    'UPDATE recipeOfTheDay SET recipe_date = $1 WHERE id = 1', [date]
-  );
-  axios({
-  url: `https://www.themealdb.com/api/json/v1/1/random.php`,
-  method: 'GET',
-  dataType: 'json',
-  headers: {
-    'Accept-Encoding': 'application/json',
-  },
-  })
-  .then(async results => {
-    console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
-    const randomRecipe = results.data;
-    await db.query(
-        'UPDATE recipeOfTheDay SET recipe_of_the_day = $1 WHERE id = 1', [randomRecipe]
-    );
+    try {
+        const date = new Date().toISOString().split('T')[0];
+        const current_date_query = await db.any('SELECT recipe_date FROM recipeOfTheDay WHERE id = 1');
+        const current_date = current_date_query[0].recipe_date;
+        if (date != current_date) {
+            await db.query(
+                'UPDATE recipeOfTheDay SET recipe_date = $1 WHERE id = 1', [date]
+            );
+            axios({
+                url: `https://www.themealdb.com/api/json/v1/1/random.php`,
+                method: 'GET',
+                dataType: 'json',
+                headers: {
+                    'Accept-Encoding': 'application/json',
+                },
+            })
+                .then(async results => {
+                    console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+                    const randomRecipe = results.data;
+                    await db.query(
+                        'UPDATE recipeOfTheDay SET recipe_of_the_day = $1 WHERE id = 1', [randomRecipe]
+                    );
 
-     // Get favorite recipes
+                    // Get favorite recipes
+                    const username = req.session.user.username;
+                    const favoriteRecipes = await db.any(`
+                SELECT favorite_recipes.recipe_id, favorite_recipes.recipe_name, favorite_recipes.cuisine
+                FROM favorite_recipes
+                JOIN users_to_favorite_recipes ON favorite_recipes.recipe_id = users_to_favorite_recipes.recipe_id
+                WHERE users_to_favorite_recipes.username = $1;`
+                        , [username]
+                    );
+                    console.log(JSON.stringify(favoriteRecipes, null, 2));
+
+                    res.render('pages/Recipe', { randomRecipe: randomRecipe, favoriteRecipes: favoriteRecipes ?? [] });
+                })
+                .catch(error => {
+                    res.render('pages/Recipe', { message: "Error" });
+                });
+        }
+        else {
+            const result = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
+            const randomRecipe = result[0].recipe_of_the_day;
+
+            // Get favorite recipes
             const username = req.session.user.username;
             const favoriteRecipes = await db.any(`
                 SELECT favorite_recipes.recipe_id, favorite_recipes.recipe_name, favorite_recipes.cuisine
@@ -593,47 +624,26 @@ const current_date = current_date_query[0].recipe_date;
             );
             console.log(JSON.stringify(favoriteRecipes, null, 2));
 
-    res.render('pages/Recipe', { randomRecipe: randomRecipe, favoriteRecipes: favoriteRecipes ?? [] });
-  })
-  .catch(error => {
-    res.render('pages/Recipe', { message: "Error"});
-});
-  }
- else {
-    const result = await db.any('SELECT recipe_of_the_day FROM recipeOfTheDay WHERE id = 1');
-    const randomRecipe = result[0].recipe_of_the_day;
-
-     // Get favorite recipes
-            const username = req.session.user.username;
-            const favoriteRecipes = await db.any(`
-                SELECT favorite_recipes.recipe_id, favorite_recipes.recipe_name, favorite_recipes.cuisine
-                FROM favorite_recipes
-                JOIN users_to_favorite_recipes ON favorite_recipes.recipe_id = users_to_favorite_recipes.recipe_id
-                WHERE users_to_favorite_recipes.username = $1;`
-                , [username]
-            );
-            console.log(JSON.stringify(favoriteRecipes, null, 2));
-
-    res.render('pages/Recipe', { randomRecipe: randomRecipe, favoriteRecipes: favoriteRecipes ?? []});
-}
-}
-catch(err){
-    res.render('pages/Recipe', { message: "Error"});
-}
+            res.render('pages/Recipe', { randomRecipe: randomRecipe, favoriteRecipes: favoriteRecipes ?? [] });
+        }
+    }
+    catch (err) {
+        res.render('pages/Recipe', { message: "Error" });
+    }
 })
 
 app.get('/Recipe/searchByCuisine', auth, async (req, res) => {
-        await axios({
-            url: `https://www.themealdb.com/api/json/v1/1/filter.php`,
-            method: 'GET',
-            dataType: 'json',
-            headers: {
-                'Accept-Encoding': 'application/json',
-            },
-            params: {
-                a: req.query.cuisine
-            }
-        })
+    await axios({
+        url: `https://www.themealdb.com/api/json/v1/1/filter.php`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'Accept-Encoding': 'application/json',
+        },
+        params: {
+            a: req.query.cuisine
+        }
+    })
         .then(async results => {
             console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
 
@@ -656,10 +666,10 @@ app.get('/Recipe/searchByCuisine', auth, async (req, res) => {
             console.log(JSON.stringify(favoriteRecipes, null, 2));
 
             // return
-            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes, selectedCuisine: req.query.cuisine, favoriteRecipes: favoriteRecipes ?? []});
+            res.render('pages/Recipe', { randomRecipe: randomRecipe, filteredRecipes: searchedRecipes, selectedCuisine: req.query.cuisine, favoriteRecipes: favoriteRecipes ?? [] });
         })
         .catch(error => {
-            res.render('pages/Recipe', { message: "Error"});
+            res.render('pages/Recipe', { message: "Error" });
         });
 });
 
@@ -827,5 +837,5 @@ console.log('Server is listening on port 3001');
 
 // lab 10
 app.get('/welcome', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+    res.json({ status: 'success', message: 'Welcome!' });
 });

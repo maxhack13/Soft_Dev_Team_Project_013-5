@@ -240,41 +240,30 @@ app.get('/SnowReport', auth, async (req, res) => {
 
     try {
         const coords = skiResorts[resort];
-        const apiParams = {
-            latitude: coords.lat,
-            longitude: coords.lon,
-            daily: 'snowfall_sum,temperature_2m_max,temperature_2m_min',
-            temperature_unit: 'fahrenheit',
-            timezone: 'America/Denver',
-            forecast_days: 7
-        };
 
-        let response;
-        try {
-            response = await axios.get('https://api.open-meteo.com/v1/forecast', { params: apiParams });
-        } catch (firstErr) {
-            // If 429 rate limit, wait and retry once
-            if (firstErr.response && firstErr.response.status === 429) {
-                console.log('Snow Report: 429 rate limit, retrying in 1.5s...');
-                await new Promise(r => setTimeout(r, 1500));
-                response = await axios.get('https://api.open-meteo.com/v1/forecast', { params: apiParams });
-            } else {
-                throw firstErr;
+        // Call WeatherAPI.com (free tier, 1M req/month, personal API key)
+        const response = await axios.get('https://api.weatherapi.com/v1/forecast.json', {
+            params: {
+                key: process.env.WEATHER_API_KEY,
+                q: `${coords.lat},${coords.lon}`,
+                days: 7
             }
-        }
+        });
 
-        const daily = response.data.daily;
-
-        const forecast = daily.time.map((date, i) => ({
-            date: date,
-            snowfall: daily.snowfall_sum[i],
-            high: Math.round(daily.temperature_2m_max[i]),
-            low: Math.round(daily.temperature_2m_min[i]),
+        const forecast = response.data.forecast.forecastday.map(day => ({
+            date: day.date,
+            snowfall: Math.round(day.day.totalsnow_cm / 2.54 * 10) / 10, // cm to inches
+            high: Math.round(day.day.maxtemp_f),
+            low: Math.round(day.day.mintemp_f),
         }));
 
         res.render('pages/SnowReport', { forecast, resort, resortNames });
     } catch (err) {
         console.error('Snow Report API error:', err.message);
+        if (err.response) {
+            console.error('Snow Report API status:', err.response.status);
+            console.error('Snow Report API data:', JSON.stringify(err.response.data, null, 2));
+        }
         res.render('pages/SnowReport', { forecast: null, resort, resortNames, error: true });
     }
 });
